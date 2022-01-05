@@ -14,4 +14,9 @@ public class Constant {
     public static String mainViewUrl = "/display/main";
     public static String todayViewUrl = "/display/today";
 
+    public static final int REQUEST_CODE_CAMERA = 1000;
+    public static final int REQUEST_CODE_LOCALTION = 1001;
+    public static final int REQUEST_CODE_PHONE = 1002;
+
+
 }

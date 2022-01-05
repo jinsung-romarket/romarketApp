@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

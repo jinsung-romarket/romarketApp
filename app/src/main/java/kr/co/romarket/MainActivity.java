@@ -1,9 +1,12 @@
 package kr.co.romarket;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,6 +34,7 @@ import android.widget.ImageView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -185,8 +189,33 @@ public class MainActivity extends AppCompatActivity {
         // overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
     }
 
+    // Barcode Scan
+    public void barcodeScan () {
+        if (Build.VERSION.SDK_INT >= 23 ) {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA }, Constant.REQUEST_CODE_CAMERA );
+        } else {
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+            integrator.setPrompt("붉은선에 바코드를 맞춰주세요.");
+            integrator.setCameraId(0);
+            integrator.setBeepEnabled(true);
+            integrator.setBarcodeImageEnabled(false);
+            integrator.initiateScan();
 
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode ) {
+            case Constant.REQUEST_CODE_CAMERA : {
+                return;
+            }
+
+        }
+
+    }
 
     /** Custom Class -------------------------------------------------------------------- **/
     // Custom web

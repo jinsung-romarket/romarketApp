@@ -1,6 +1,7 @@
 package kr.co.romarket;
 
 import android.os.Handler;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 final class AndroidBridge {
@@ -21,6 +22,15 @@ final class AndroidBridge {
             public void run() {
                 //((ZoomImg_activity)ZoomImg_activity.zoom_img_context).show_zoom_img(zoom_img_src);
                 ((MainActivity)MainActivity.mainActivityContext).showZoomImg(zoomImgSrc );
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void request_run_scan(final String call_from) {
+        handler.post(new Runnable() {
+            public void run() {
+                ((MainActivity)MainActivity.mainActivityContext).barcodeScan();
             }
         });
     }
