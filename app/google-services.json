@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "763063951729",
+    "firebase_url": "https://dnmart-3bb0e.firebaseio.com",
+    "project_id": "dnmart-3bb0e",
+    "storage_bucket": "dnmart-3bb0e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763063951729:android:3ee84ef8f5c61a5c",
+        "android_client_info": {
+          "package_name": "kr.co.dmart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "763063951729-mia0kh73o4adclho70299s9o7h0u7o3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD49HTX5VWrAPd5TuqU6_Q64ClIljMCxB0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763063951729:android:f59ca4842ad7863a",
+        "android_client_info": {
+          "package_name": "kr.co.nosmart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "763063951729-mia0kh73o4adclho70299s9o7h0u7o3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD49HTX5VWrAPd5TuqU6_Q64ClIljMCxB0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
