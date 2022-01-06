@@ -8,33 +8,40 @@ final class AndroidBridge {
     private final Handler handler = new Handler();
 
     @JavascriptInterface
-    public void callAndroid(final String str ) {
-        handler.post(new Runnable() {
-            public void run() {
-
-            }
-        });
-    }
-
-    @JavascriptInterface
     public void zoom_img(final String zoomImgSrc) {
         handler.post(new Runnable() {
             public void run() {
-                //((ZoomImg_activity)ZoomImg_activity.zoom_img_context).show_zoom_img(zoom_img_src);
                 ((MainActivity)MainActivity.mainActivityContext).showZoomImg(zoomImgSrc );
             }
         });
     }
 
     @JavascriptInterface
-    public void request_run_scan(final String call_from) {
+    public void request_scan() { // response_scan
         handler.post(new Runnable() {
             public void run() {
-                ((MainActivity)MainActivity.mainActivityContext).barcodeScan();
+                ((MainActivity)MainActivity.mainActivityContext).requestScan();
             }
         });
     }
 
+    @JavascriptInterface
+    public void request_location() { // response_location
+        handler.post(new Runnable() {
+            public void run() {
+                ((MainActivity)MainActivity.mainActivityContext).requestLocation();
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void check_phone_num() {
+        handler.post(new Runnable() {
+            public void run() {
+                // ((MainActivity)MainActivity.mainActivityContext).requestPhoneNumber();
+            }
+        });
+    }
 
 
 

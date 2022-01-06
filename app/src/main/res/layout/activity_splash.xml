@@ -13,7 +13,20 @@
         android:contentDescription="@string/splach_image"
         android:scaleType="fitXY"
         app:srcCompat="@drawable/splash"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <TextView
+        android:id="@+id/mVersionName"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:text="VER : "
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="MissingConstraints" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,11 +2,14 @@ package kr.co.romarket;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,6 +17,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -30,6 +37,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -62,16 +70,57 @@ public class MainActivity extends AppCompatActivity {
 
     //
     public static String mZoomImgSrc;
+    // 위치 기반
+    public static LocationManager mLocationManager;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
+    final LocationListener mLocationListener = new LocationListener() {
+        public void onLocationChanged(Location location) {
+            String provider = location.getProvider();
+            double longitude = location.getLongitude();
+            double latitude = location.getLatitude();
+            double altitude = location.getAltitude();
+
+            Log.d("MainActivity:gpsLocationListener", "provider : " + provider);
+            // txtResult.setText("위치정보 : " + provider + "\n" + "위도 : " + longitude + "\n" + "경도 : " + latitude + "\n" + "고도 : " + altitude);
+
+            StringBuffer locationUrl = new StringBuffer();
+            locationUrl.append("javascript:");
+            locationUrl.append("response_location (");
+            locationUrl.append(longitude).append(",");
+            locationUrl.append(latitude).append(",");
+            locationUrl.append(altitude).append(",");
+            locationUrl.append("'").append(provider).append("'");
+            locationUrl.append(");");
+
+            Log.d("MainActivity:gpsLocationListener", "locationUrl : " + locationUrl.toString() );
+            mainWebView.loadUrl(locationUrl.toString() );
+            mLocationManager.removeUpdates(mLocationListener);
+
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 파라메터 log
+        Log.d("MainActivity:onCreate", "andId : " + this.andId);
+        Log.d("MainActivity:onCreate", "fcmId : " + this.fcmId);
+        Log.d("MainActivity:onCreate", "pShopSeq : " + this.pShopSeq);
+        Log.d("MainActivity:onCreate", "pPageCode : " + this.pPageCode);
 
         this.mainActivityContext = this;
 
@@ -88,11 +137,8 @@ public class MainActivity extends AppCompatActivity {
             mainImageView.setImageResource(R.drawable.main_splash02);
         }
 
-        // 파라메터 log
-        Log.d("MainActivity:onCreate", "andId : " + this.andId);
-        Log.d("MainActivity:onCreate", "fcmId : " + this.fcmId);
-        Log.d("MainActivity:onCreate", "pShopSeq : " + this.pShopSeq);
-        Log.d("MainActivity:onCreate", "pPageCode : " + this.pPageCode);
+        // 위치 기반
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Web View 설정
         // 자바스크립트 사용여부
@@ -144,12 +190,15 @@ public class MainActivity extends AppCompatActivity {
             pageUrl = Constant.todayViewUrl;
         }
 
+        //TEST
         // urlBuf.append(Constant.serverUrl );
-        // urlBuf.append(Constant.checkServerUrl );
         // urlBuf.append("/main_test.php" );
+        // urlBuf.append(Constant.checkServerUrl );
 
+        //
         urlBuf.append("https://app.ro-market.com" );
         urlBuf.append(pageUrl );
+
         // Param
         urlBuf.append("?").append("dv_kind=").append("android" );
         urlBuf.append("&").append("group_id=").append("" );
@@ -168,12 +217,92 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     /** Back Button */
     @Override
     public void onBackPressed() {
         if(this.mainWebView.canGoBack() ) {
             this.mainWebView.goBack();
         }
+    }
+
+    @Override
+    @SuppressLint("MissingPermission")
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode ) {
+            case Constant.REQUEST_CODE_CAMERA : {
+                Log.d("MainActivity:onRequestPermissionsResult", "REQUEST_CODE_CAMERA : " );
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    IntentIntegrator integrator = new IntentIntegrator(this);
+                    integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                    integrator.setPrompt("붉은선에 바코드를 맞춰주세요.");
+                    integrator.setCameraId(0);
+                    integrator.setBeepEnabled(true);
+                    integrator.setBarcodeImageEnabled(false);
+                    integrator.initiateScan();
+
+                }
+
+                return;
+            }
+
+            case Constant.REQUEST_CODE_LOCALTION : {
+                Log.d("MainActivity:onRequestPermissionsResult", "REQUEST_CODE_LOCALTION : " );
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "앱 실행을 위한 권한이 설정 되었습니다", Toast.LENGTH_LONG).show();
+
+                    mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 1, mLocationListener );
+                    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, mLocationListener );
+
+                } else {
+                    Toast.makeText(this, "앱 실행을 위한 권한이 취소 되었습니다", Toast.LENGTH_LONG).show();
+
+                }
+
+                return;
+            }
+
+            case Constant.REQUEST_CODE_PHONE : {
+
+                return;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // 바코드 리딩 처리
+        if (resultCode != 0) {
+            String barcode = data.getStringExtra("SCAN_RESULT");
+            String barcodeFormat = data.getStringExtra("SCAN_RESULT_FORMAT");
+
+            Log.d("MainActivity:onActivityResult", "barcodeFormat : " + barcodeFormat);
+            Log.d("MainActivity:onActivityResult", "barcode : " + barcode);
+
+            if(StringUtils.isNotEmpty(barcode) && "EAN_13".equals(barcodeFormat) ) {
+                // mWebView.loadUrl("javascript:response_bar_code('"+str_bar_code+"')");
+
+                StringBuffer barcodeUrl = new StringBuffer();
+                barcodeUrl.append("javascript:");
+                barcodeUrl.append("response_scan (");
+                barcodeUrl.append("'").append(barcode).append("'");
+                barcodeUrl.append(");");
+
+                Log.d("MainActivity:onActivityResult", "barcodeUrl : " + barcodeUrl.toString() );
+                mainWebView.loadUrl(barcodeUrl.toString() );
+
+            } else {
+
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /** -------------------------------------------------------------------- **/
@@ -190,8 +319,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Barcode Scan
-    public void barcodeScan () {
-        if (Build.VERSION.SDK_INT >= 23 ) {
+    public void requestScan () {
+        if (Build.VERSION.SDK_INT >= 23 && ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ) {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA }, Constant.REQUEST_CODE_CAMERA );
         } else {
             IntentIntegrator integrator = new IntentIntegrator(this);
@@ -201,20 +330,26 @@ public class MainActivity extends AppCompatActivity {
             integrator.setBeepEnabled(true);
             integrator.setBarcodeImageEnabled(false);
             integrator.initiateScan();
-
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode ) {
-            case Constant.REQUEST_CODE_CAMERA : {
-                return;
+    public void requestLocation () {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            Log.d("MainActivity:requestLocation", "REQUEST_CODE_LOCALTION 1 : " );
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다", Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, Constant.REQUEST_CODE_LOCALTION );
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, Constant.REQUEST_CODE_LOCALTION );
             }
 
-        }
+        } else {
+            Log.d("MainActivity:requestLocation", "REQUEST_CODE_LOCALTION 2 : " );
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 1, mLocationListener );
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, mLocationListener );
 
+        }
     }
 
     /** Custom Class -------------------------------------------------------------------- **/

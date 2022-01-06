@@ -22,7 +22,6 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/splach_image"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/splash"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
         tools:ignore="MissingConstraints" />

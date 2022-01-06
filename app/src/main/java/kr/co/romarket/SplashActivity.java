@@ -10,6 +10,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -37,12 +38,23 @@ public class SplashActivity extends AppCompatActivity {
         Log.d("SplashActivity", "pShopSeq : " + MainActivity.pShopSeq );
         Log.d("SplashActivity", "pPageCode : " + MainActivity.pPageCode );
 
+        // Version Name
+        TextView mVersionName = (TextView) findViewById(R.id.mVersionName );
+        int versionCode = 0;
+        String versionName = null;
+
         // Version Number
         MainActivity.versionNumber = 0;
         try {
             PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            MainActivity.versionNumber = pinfo.versionCode;
+            versionCode = pinfo.versionCode;
+            versionName = pinfo.versionName;
+
+            MainActivity.versionNumber = versionCode;
+            mVersionName.setText(String.format("Ver : %d %s", versionCode, versionName) );
+
         } catch (Exception e) {
+            e.printStackTrace();
 
         }
 
@@ -119,8 +131,8 @@ public class SplashActivity extends AppCompatActivity {
                 if(Constant.serverStatusSuccess.equals(code) ) {
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class );
                     startActivity(intent );
-
                     finish();
+
                 } else {
                     CustomDialog customDialog = new CustomDialog(SplashActivity.this );
                     customDialog.setTitle("알림");
