@@ -18,5 +18,6 @@ public class Constant {
     public static final int REQUEST_CODE_LOCALTION = 1001;
     public static final int REQUEST_CODE_PHONE = 1002;
 
+    public static final long FINISH_INTERVAL_TIME = 2000;
 
 }

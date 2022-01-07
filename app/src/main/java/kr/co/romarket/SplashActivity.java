@@ -15,8 +15,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
@@ -35,8 +34,8 @@ public class SplashActivity extends AppCompatActivity {
             MainActivity.pShopSeq = getIntent().getData().getQueryParameter("shop_seq");
             MainActivity.pPageCode = getIntent().getData().getQueryParameter("page_code");
         }
-        Log.d("SplashActivity", "pShopSeq : " + MainActivity.pShopSeq );
-        Log.d("SplashActivity", "pPageCode : " + MainActivity.pPageCode );
+        Log.d("SplashActivity:onCreate", "pShopSeq : " + MainActivity.pShopSeq );
+        Log.d("SplashActivity:onCreate", "pPageCode : " + MainActivity.pPageCode );
 
         // Version Name
         TextView mVersionName = (TextView) findViewById(R.id.mVersionName );
@@ -60,18 +59,20 @@ public class SplashActivity extends AppCompatActivity {
 
         // Gcm
         MainActivity.andId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d("SplashActivity", "andId : " + MainActivity.andId);
+        Log.d("SplashActivity:onCreate", "andId : " + MainActivity.andId);
 
         // Fcm
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(this, new OnSuccessListener<InstanceIdResult>() {
-            @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
-                MainActivity.fcmId = instanceIdResult.getToken();
-                Log.d("SplashActivity", "fcmId : " + MainActivity.fcmId );
-                checkServerStatus();
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(
+                new OnSuccessListener<String>() {
+                    @Override
+                    public void onSuccess(String token ) {
+                        MainActivity.fcmId = token;
+                        Log.d("SplashActivity:onSuccess", "fcmId : " + MainActivity.fcmId );
 
-            }
-        });
+                        checkServerStatus();
+                    }
+                }
+        );
 
     }
 
@@ -93,7 +94,7 @@ public class SplashActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("SplashActivity", "exception : " + e.getMessage() );
+                Log.d("SplashActivity:Thread", "exception : " + e.getMessage() );
 
                 // Error Dialog 호출
 

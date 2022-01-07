@@ -40,8 +40,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
     public static String mZoomImgSrc;
     // 위치 기반
     public static LocationManager mLocationManager;
+
+    // Back Button 처리
+    private long backPressedTime = 0;
 
     final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
@@ -225,8 +226,18 @@ public class MainActivity extends AppCompatActivity {
     /** Back Button */
     @Override
     public void onBackPressed() {
+        long currentTime = System.currentTimeMillis();
+        long intervalTime = currentTime - backPressedTime;
+
         if(this.mainWebView.canGoBack() ) {
             this.mainWebView.goBack();
+        } else {
+            if (0 <= intervalTime && Constant.FINISH_INTERVAL_TIME >= intervalTime) {
+                finish();
+            } else {
+                backPressedTime = currentTime;
+                Toast.makeText(getApplicationContext(), "한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -278,6 +289,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         // 바코드 리딩 처리
         if (resultCode != 0) {
             String barcode = data.getStringExtra("SCAN_RESULT");
@@ -302,7 +315,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /** -------------------------------------------------------------------- **/
