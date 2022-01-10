@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_r_layout_img"
+    android:layout_width="330dp"
+    android:layout_height="470dip"
+    android:layout_gravity="center"
+    android:layout_marginRight="5dp" >
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" >
+
+        <TextView
+            android:id="@+id/text_title_bar"
+            android:layout_width="330dp"
+            android:layout_height="35dip"
+            android:layout_gravity="center"
+            android:background="@drawable/new_popup_top_comp"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+
+        <TextView
+            android:id="@+id/text_title_left"
+            android:layout_width="10dp"
+            android:layout_height="360dip"
+            android:layout_above="@+id/text_title_bottom"
+            android:layout_alignLeft="@id/text_title_bar"
+            android:layout_alignTop="@+id/text_subject_bar"
+            android:background="@drawable/new_popup_side"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/text_title_right"
+            android:layout_width="10dp"
+            android:layout_height="360dip"
+            android:layout_alignTop="@+id/text_subject_bar"
+            android:layout_alignRight="@+id/text_title_bar"
+            android:layout_alignBottom="@+id/text_bottom_space"
+            android:layout_toRightOf="@id/text_bottom_space"
+            android:background="@drawable/new_popup_side"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/text_title_bottom"
+            android:layout_width="330dp"
+            android:layout_height="10dip"
+            android:paddingLeft="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/new_popup_bottom"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/text_bottom_space"
+            android:layout_width="290dp"
+            android:layout_height="5dip"
+            android:layout_above="@+id/text_title_bottom"
+            android:layout_toRightOf="@+id/text_title_left"
+            android:background="#FFFFFF"
+            android:paddingLeft="15dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/text_back_base"
+            android:layout_width="300dp"
+            android:layout_height="40dip"
+            android:layout_above="@+id/text_bottom_space"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:layout_toRightOf="@+id/text_title_left"
+            android:background="#FFFFFF"
+            android:paddingLeft="15dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:text=""
+            android:textColor="@android:color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/text_subject_bar"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_alignLeft="@+id/text_back_base"
+            android:layout_below="@+id/text_title_bar"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:background="#FFFFFF"
+            android:paddingLeft="5dp"
+            android:paddingTop="10dp"
+            android:textColor="#000000"
+            android:text=""
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/your_image"
+            android:layout_width="290dp"
+            android:layout_height="290dp"
+            android:layout_above="@+id/TextView01"
+            android:layout_alignLeft="@+id/text_subject_bar"
+            android:layout_below="@+id/text_subject_bar"
+            android:background="@android:color/white"
+            android:onClick="btn_click"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="10dp"
+            android:src="@drawable/image_comming" />
+
+        <Button
+            android:id="@+id/button_nothing"
+            android:layout_width="20dp"
+            android:layout_height="40dp"
+            android:layout_above="@+id/text_bottom_space"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:onClick="btn_click"
+            android:background="#FFFFFF"
+            android:textColor="#000000"
+            android:text=""
+            android:textColorHint="#FFFFFF" />
+
+        <Button
+            android:id="@+id/button_confirm"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_above="@+id/text_bottom_space"
+            android:layout_toLeftOf="@+id/button_nothing"
+            android:background="@drawable/buttom_confirm"
+            android:gravity="center"
+            android:onClick="btn_click"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="290dp"
+            android:layout_height="10dip"
+            android:layout_above="@+id/text_back_base"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:background="#FFFFFF"
+            android:paddingLeft="15dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/TextView01"
+            android:layout_toRightOf="@+id/button_nothing"
+            android:background="@drawable/buttom_cancel"
+            android:gravity="center"
+            android:onClick="btn_click"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

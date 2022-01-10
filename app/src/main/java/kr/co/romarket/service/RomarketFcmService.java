@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
+import kr.co.romarket.ImagePopupActivity;
 import kr.co.romarket.MainActivity;
 import kr.co.romarket.PushPopupActivity;
 import kr.co.romarket.R;
@@ -88,16 +89,29 @@ public class RomarketFcmService extends FirebaseMessagingService {
         if(MainActivity.isBackGround == false ) {
             Log.d("RomarketFcmService:onMessageReceived", "PushPopupActivity : " );
 
-            Intent pushPop = new Intent(MainActivity.mainActivityContext, PushPopupActivity.class );
-            pushPop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
-            pushPop.putExtra("msg", fcmMsg );
-            pushPop.putExtra("conn_url", fcmConnUrl );
-            pushPop.putExtra("msg_kind", fcmMsgKind );
-            pushPop.putExtra("shop_seq", fcmShopSeq );
-            pushPop.putExtra("shop_name", fcmShopName );
-            pushPop.putExtra("is_sound", "Y" );
+            if ("IMGPOPUP".equals(fcmMsgKind )) {
+                Intent imgPop = new Intent(MainActivity.mainActivityContext, ImagePopupActivity.class);
+                imgPop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                imgPop.putExtra("msg", fcmMsg);
+                imgPop.putExtra("conn_url", fcmConnUrl);
+                imgPop.putExtra("msg_kind", fcmMsgKind);
+                imgPop.putExtra("shop_seq", fcmShopSeq);
+                imgPop.putExtra("shop_name", fcmShopName);
+                imgPop.putExtra("is_sound", "Y");
 
-            startActivity(pushPop );
+                startActivity(imgPop);
+            } else {
+                Intent pushPop = new Intent(MainActivity.mainActivityContext, PushPopupActivity.class );
+                pushPop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                pushPop.putExtra("msg", fcmMsg );
+                pushPop.putExtra("conn_url", fcmConnUrl );
+                pushPop.putExtra("msg_kind", fcmMsgKind );
+                pushPop.putExtra("shop_seq", fcmShopSeq );
+                pushPop.putExtra("shop_name", fcmShopName );
+                pushPop.putExtra("is_sound", "Y" );
+
+                startActivity(pushPop );
+            }
 
         } else {
 

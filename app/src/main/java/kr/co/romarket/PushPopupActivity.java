@@ -4,7 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -52,12 +59,36 @@ public class PushPopupActivity extends AppCompatActivity  {
         // Data Load
         Bundle extras = getIntent().getExtras();
         String msg = extras.getString("msg");
-        String is_sound = extras.getString("is_sound");
+        String isSound = extras.getString("is_sound");
         this.msgKind = extras.getString("msg_kind");
         this.shopSeq = extras.getString("shop_seq");
         this.shopName = extras.getString("shop_name");
 
         // 소리 및 진동 설정
+        if ("Y".equals(isSound) ) {
+            AudioManager clsAudioManager = (AudioManager)getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+            switch( clsAudioManager.getRingerMode() ) {
+                case AudioManager.RINGER_MODE_VIBRATE :
+                    // 진동 모드
+                    Vibrator mVibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+                    // 1초 진동
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mVibe.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        mVibe.vibrate(1000);
+                    }
+
+                    break;
+
+                case AudioManager.RINGER_MODE_NORMAL :
+                    Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(),RingtoneManager.TYPE_NOTIFICATION);
+                    Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), ringtoneUri);
+                    ringtone.play();
+
+                    break;
+
+            }
+        }
 
 
         if (StringUtils.isNotEmpty(this.shopName)) {

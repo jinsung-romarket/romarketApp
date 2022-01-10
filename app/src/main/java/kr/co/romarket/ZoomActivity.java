@@ -68,33 +68,33 @@ public class ZoomActivity extends AppCompatActivity {
 
         protected void onPostExecute(Bitmap result) {
 
-            float img_width = result.getWidth();
-            float img_height = result.getHeight();
-            float new_img_width = 0;
-            float new_img_height = 0;
-            float resize_base = 0;
+            float imgWidth = result.getWidth();
+            float imgHeight = result.getHeight();
+            float newImgWidth = 0;
+            float newImgHeight = 0;
+            float resizeBase = 0;
 
-            float base_size = ZoomActivity.maxTextureSize;
-            if (base_size < 4000) {
-                base_size = 4000;
+            float baseSize = ZoomActivity.maxTextureSize;
+            if (baseSize < 4000) {
+                baseSize = 4000;
             }
 
-            if (img_width > base_size || img_height > base_size){
+            if (imgWidth > baseSize || imgHeight > baseSize){
                 //고행사도 이미지는 Bitmap too large to be uploaded into a texture 오류발생...
-                base_size = base_size -10;
-                if (img_width > img_height) {
+                baseSize = baseSize -10;
+                if (imgWidth > imgHeight) {
                     //가로가 큰 경우 가로를 기준으로 리사이즈
-                    resize_base = base_size / img_width;
-                    new_img_width = base_size;
-                    new_img_height = img_height * resize_base;
+                    resizeBase = baseSize / imgWidth;
+                    newImgWidth = baseSize;
+                    newImgHeight = imgHeight * resizeBase;
                 } else {
                     //세로가 큰 경우
-                    resize_base = base_size / img_height;
-                    new_img_height = base_size;
-                    new_img_width = img_width * resize_base;
+                    resizeBase = baseSize / imgHeight;
+                    newImgHeight = baseSize;
+                    newImgWidth = imgWidth * resizeBase;
                 }
                 Bitmap resized = null;
-                resized = Bitmap.createScaledBitmap(result, (int)new_img_width , (int)new_img_height, false);
+                resized = Bitmap.createScaledBitmap(result, (int)newImgWidth , (int)newImgHeight, false);
 
                 ImageView zoom_img = (ImageView)findViewById(R.id.zoom_image);
                 zoom_img.setBackgroundColor(Color.parseColor("#000000"));
@@ -115,7 +115,6 @@ public class ZoomActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        boolean call_goback = true;
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
             // overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);

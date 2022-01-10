@@ -2,6 +2,7 @@ package kr.co.romarket;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.Window;
 import android.widget.Button;
@@ -37,6 +38,8 @@ public class CustomDialog {
         this.positiveButton = (Button) dlg.findViewById(R.id.positiveButton );
         this.titleTextView = (TextView) dlg.findViewById(R.id.titleTextView );
         this.messageTextView = (TextView) dlg.findViewById(R.id.messageTextView );
+
+        this.dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
     }
 
     public void setTitle (String title ) {
