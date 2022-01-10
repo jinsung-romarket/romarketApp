@@ -7,6 +7,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -74,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
     // Back Button 처리
     private long backPressedTime = 0;
 
+    // App 확인
+    private LifecycleObserver lifecycleObserver = null;
+    public static boolean isBackGround = true;
+
     final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             String provider = location.getProvider();
@@ -112,9 +118,17 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private void setupLifeCycleObserver() {
+        this.lifecycleObserver = new CycleListener();
+        this.isBackGround = true;
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this.lifecycleObserver );
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupLifeCycleObserver();
+
         setContentView(R.layout.activity_main);
 
         // 파라메터 log

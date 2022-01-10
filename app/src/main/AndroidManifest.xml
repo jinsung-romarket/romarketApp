@@ -48,16 +48,22 @@
 
         <activity
             android:name=".MainActivity" android:theme="@style/Theme.RomarketApp" >
-            <intent-filter>
-                <action android:name="kr.co.dmart.pushpopup" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
 
         <activity
             android:name=".ZoomActivity"
             android:screenOrientation="unspecified"
             android:configChanges="orientation|keyboardHidden" >
+        </activity>
+
+        <activity
+            android:name=".PushPopupActivity"
+            android:theme="@style/Theme.AppCompat.Translucent" >
+            <intent-filter>
+                <action android:name="kr.co.romarket.PushPopupActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
 
         <service android:name=".service.RomarketFcmService">

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_r_layout"
+    android:layout_width="330dp"
+    android:layout_height="300dip"
+    android:layout_gravity="center"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    >
+
+    <RelativeLayout
+        android:id="@+id/sub_r_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent">
+
+        <TextView
+            android:id="@+id/text_title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="35dip"
+            android:layout_gravity="center"
+            android:background="@drawable/new_popup_top_comp"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/text_title_left"
+            android:layout_width="10dp"
+            android:layout_height="360dip"
+            android:layout_alignBottom="@+id/text_bottom_space"
+            android:layout_alignLeft="@+id/text_title_bar"
+            android:layout_alignTop="@+id/text_subject_bar"
+            android:background="@drawable/new_popup_side"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/text_title_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="10dip"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/new_popup_bottom"
+            android:paddingLeft="5dp"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/text_bottom_space"
+            android:layout_width="30dp"
+            android:layout_height="5dip"
+            android:layout_above="@+id/text_title_bottom"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:layout_toRightOf="@+id/text_title_left"
+            android:background="#FFFFFF"
+            android:paddingLeft="15dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="300dip"
+            android:layout_alignBottom="@+id/TextView02"
+            android:layout_alignLeft="@+id/text_bottom_space"
+            android:layout_below="@+id/text_subject_bar"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:background="#FFFFFF"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:text=".....메세지를 조회중입니다..."
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/text_subject_bar"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignLeft="@+id/text_bottom_space"
+            android:layout_below="@+id/text_title_bar"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:background="#FFFFFF"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:text="111"
+            android:textColor="#000000"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/text_title_right"
+            android:layout_width="10dp"
+            android:layout_height="360dip"
+            android:layout_above="@+id/text_title_bottom"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/text_title_bar"
+            android:background="@drawable/new_popup_side"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/TextView02"
+            android:layout_width="30dp"
+            android:layout_height="10dip"
+            android:layout_above="@+id/TextView01"
+            android:layout_alignLeft="@+id/TextView01"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:background="#FFFFFF"
+            android:paddingLeft="15dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_above="@+id/text_bottom_space"
+            android:layout_alignLeft="@+id/text_bottom_space"
+            android:layout_toLeftOf="@+id/text_title_right"
+            android:background="#FFFFFF"
+            android:paddingLeft="5dp"
+            android:paddingTop="10dp"
+            android:textColor="#000000"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/button_nothing"
+            android:layout_width="20dp"
+            android:layout_height="40dp"
+            android:layout_above="@+id/text_bottom_space"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:onClick="btnClick"
+            android:background="#FFFFFF"
+            android:textColor="#000000"
+            android:text=""
+            android:textColorHint="#FFFFFF" />
+
+        <Button
+            android:id="@+id/button_confirm"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_above="@+id/text_bottom_space"
+            android:layout_toLeftOf="@+id/button_nothing"
+            android:background="@drawable/buttom_confirm"
+            android:gravity="center"
+            android:onClick="btnClick"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF" />
+
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/TextView01"
+            android:layout_toRightOf="@+id/button_nothing"
+            android:background="@drawable/buttom_cancel"
+            android:gravity="center"
+            android:onClick="btnClick"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
