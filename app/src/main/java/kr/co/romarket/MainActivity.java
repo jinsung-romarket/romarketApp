@@ -300,6 +300,24 @@ public class MainActivity extends AppCompatActivity {
 
                         // cookie Set
                         // cookieManager.removeAllCookies(null );
+
+                        String ckStr = cookieManager.getCookie(Constant.serverUrl);
+                        String loginOption = null;
+                        Log.d("MainActivity:onPostExecute", "ckStr : " + ckStr );
+                        if(StringUtils.isNotEmpty(ckStr) ) {
+                            String[] temp = ckStr.split(";");
+                            for (String ar1 : temp ){
+                                if(ar1.contains("loginOption")){
+                                    String[] temp1 = ar1.split("=");
+                                    loginOption = temp1[1];
+                                    break;
+                                }
+                            }
+                        }
+                        Log.d("MainActivity:onPostExecute", "loginOption : " + loginOption );
+                        if(StringUtils.isEmpty(loginOption) || "NO_AUTO_LOGIN".equals(loginOption) ) {
+                            cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "loginOption", "NO_LOGIN"));
+                        }
                         cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "dvId", dvId));
                         cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "shopSeq", shopSeq));
 
