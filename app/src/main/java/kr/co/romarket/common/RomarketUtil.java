@@ -1,11 +1,16 @@
 package kr.co.romarket.common;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -23,7 +28,7 @@ public class RomarketUtil {
             // Send data
             URL url = new URL(urlStr);
 
-            URLConnection conn = url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true );
             conn.setDoInput(true ); // 읽기모드 지정
             conn.setUseCaches(false ); // 캐싱데이터를 받을지 안받을지
@@ -75,4 +80,34 @@ public class RomarketUtil {
 
         return result;
     }
+
+    // Url -> bitmap
+    public static Bitmap getBitmapFromURL(String src) {
+        InputStream in = null;
+        int responseCode = -1;
+        Bitmap bitmap = null;
+        URL url = null;
+        try {
+            url = new URL(src);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.connect();
+            responseCode = httpURLConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                in = httpURLConnection.getInputStream();
+                bitmap = BitmapFactory.decodeStream(in);
+                in.close();
+                httpURLConnection.disconnect();
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+
+
+
 }

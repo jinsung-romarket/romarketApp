@@ -4,11 +4,11 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.PowerManager;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -16,15 +16,20 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
 
+import kr.co.romarket.CustomDialog;
 import kr.co.romarket.ImagePopupActivity;
 import kr.co.romarket.MainActivity;
 import kr.co.romarket.PushPopupActivity;
 import kr.co.romarket.R;
+import kr.co.romarket.common.RomarketUtil;
+import kr.co.romarket.common.ThreadTask;
+import kr.co.romarket.config.Constant;
 
 public class RomarketFcmService extends FirebaseMessagingService {
 
@@ -37,9 +42,74 @@ public class RomarketFcmService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         // Token을 서버로 전송
-
         Log.d("RomarketFcmService:onNewToken", "token : " + token );
+        sendNewToken(token );
+    }
 
+    public void sendNewToken (String token ) {
+        new ThreadTask<String, String>() {
+            @Override
+            protected void onPreExecute() {
+
+            }
+
+            @Override
+            protected String doInBackground(String arg) {
+                String setResult = null;
+                StringBuffer urlBuf = new StringBuffer();
+                urlBuf.append(Constant.serverUrl );
+                urlBuf.append(Constant.setInfoUrl );
+
+                urlBuf.append("?").append("dvKind=").append("android" );
+                urlBuf.append("&").append("groupId=").append("" );
+                urlBuf.append("&").append("dvId=").append("" );
+                urlBuf.append("&").append("andId=").append(MainActivity.andId );
+                urlBuf.append("&").append("fcmId=").append(token );
+                urlBuf.append("&").append("appVer=").append(MainActivity.versionNumber );
+
+                // MainActivity.pShopSeq = "2";
+                if(StringUtils.isNotEmpty(MainActivity.pShopSeq) ) {
+                    urlBuf.append("&").append("shopSeq=").append(MainActivity.pShopSeq );
+                }
+
+                try {
+                    Log.d("RomarketFcmService:sendNewToken", "urlBuf : " + urlBuf.toString() );
+                    setResult = RomarketUtil.httpConnect(urlBuf.toString() , null );
+                    Log.d("RomarketFcmService:sendNewToken", "setResult : " + setResult );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d("RomarketFcmService:sendNewToken", "exception : " + e.getMessage() );
+                }
+
+                return setResult;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.d("RomarketFcmService:sendNewToken", "onPostExecute : " + result );
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result );
+                    String dvId = jsonObject.getString("dvId" );
+                    String shopSeq = jsonObject.getString("shopSeq" );
+                    Log.d("RomarketFcmService:sendNewToken", "dvId : " + dvId );
+                    Log.d("RomarketFcmService:sendNewToken", "shopSeq : " + shopSeq );
+
+                    if(StringUtils.isNotEmpty(dvId) ) {
+
+                    } else {
+
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+
+            }
+
+        }.execute("");
     }
 
     @Override
@@ -81,7 +151,7 @@ public class RomarketFcmService extends FirebaseMessagingService {
         Log.d("RomarketFcmService:onMessageReceived", "MainActivity.andId : " + MainActivity.andId );
         Log.d("RomarketFcmService:onMessageReceived", "MainActivity.versionNumber : " + MainActivity.versionNumber );
 
-        showTopNoti("title", fcmMsg );
+        showTopNoti("title", fcmMsg, fcmConnUrl, fcmMsgKind );
 
         // 앱이 실행중 인지에 따라
         Log.d("RomarketFcmService:onMessageReceived", "MainActivity.isBackGround : " + MainActivity.isBackGround);
@@ -119,7 +189,7 @@ public class RomarketFcmService extends FirebaseMessagingService {
 
     }
 
-    private void showTopNoti (String title, String msg ) {
+    private void showTopNoti (String title, String msg, String url, String msgKind ) {
         builder = null;
         manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         //버전 오레오 이상일 경우
@@ -131,8 +201,13 @@ public class RomarketFcmService extends FirebaseMessagingService {
             builder = new NotificationCompat.Builder(this);
         }
 
+        // Notification Action Add
         Intent intent = new Intent(getApplicationContext(), MainActivity.class );
-        intent.putExtra("name", "test");
+        if("IMGPOPUP".equals(msgKind) ) {
+            intent.putExtra("pageCode", Constant.PAGE_CODE_MAIN);
+        } else {
+            intent.putExtra("pageCode", Constant.PAGE_CODE_MAIN);
+        }
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 101, intent, PendingIntent.FLAG_UPDATE_CURRENT );
 
         // 알림창 제목
@@ -145,6 +220,12 @@ public class RomarketFcmService extends FirebaseMessagingService {
         builder.setAutoCancel(true );
         // 알림창 클릭시 인텐트 전달
         builder.setContentIntent(pendingIntent );
+
+        if(StringUtils.isNotEmpty(url) && "IMGPOPUP".equals(msgKind) ) {
+            Bitmap icon = RomarketUtil.getBitmapFromURL(url);
+            builder.setLargeIcon(icon );
+            builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(icon).bigLargeIcon(null) );
+        }
 
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(msg)) ;

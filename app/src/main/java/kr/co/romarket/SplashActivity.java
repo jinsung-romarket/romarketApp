@@ -2,6 +2,7 @@ package kr.co.romarket;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,9 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import kr.co.romarket.common.RomarketUtil;
+import kr.co.romarket.common.ThreadTask;
 import kr.co.romarket.config.Constant;
 
 public class SplashActivity extends AppCompatActivity {
@@ -74,6 +78,13 @@ public class SplashActivity extends AppCompatActivity {
                 }
         );
 
+        // Display display = getWindowManager().getDefaultDisplay();  // in Activity
+        // Point size = new Point();
+        // display.getRealSize(size); // or getSize(size)
+        // int width = size.x;
+        // int height = size.y;
+        // Log.d("SplashActivity:onCreate", "x : " + size.x + ", Y : " + size.y);
+
     }
 
     // 서버 상태 체크
@@ -81,25 +92,155 @@ public class SplashActivity extends AppCompatActivity {
         StringBuffer strbuf = new StringBuffer();
         String serverStatus = null;
 
-        // https://dnmart.co.kr/check_server.php
-        new Thread(() -> {
-            try {
-                String serverStatus1 = RomarketUtil.httpConnect(Constant.serverUrl + Constant.checkServerUrl, null );
-                Log.d("SplashActivity:Thread", "serverStatus : " + serverStatus1);
-                Bundle bun = new Bundle();
-                bun.putString("SERVER_STATUS", serverStatus1);
-                Message msg = handler.obtainMessage();
-                msg.setData(bun );
-                handler.sendMessage(msg );
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("SplashActivity:Thread", "exception : " + e.getMessage() );
-
-                // Error Dialog 호출
+        new ThreadTask<String, String>() {
+            @Override
+            protected void onPreExecute() {
 
             }
-        }).start();
+
+            @Override
+            protected String doInBackground(String arg) {
+                String setResult = null;
+                try {
+                    String url = Constant.serverUrl + Constant.checkServerUrl;
+                    setResult = RomarketUtil.httpConnect(url, null );
+                    Log.d("SplashActivity:checkServerStatus", "setResult : " + setResult);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d("SplashActivity:checkServerStatus", "exception : " + e.getMessage() );
+                    // Error Dialog 호출
+
+                    CustomDialog customDialog = new CustomDialog(SplashActivity.this );
+                    customDialog.setTitle("알림");
+                    customDialog.setMessage("서버접속 오류입니다.\n네트웍 상태를 확인하시거나\n네트웍은 문제가 없으실 경우\n서버작업중일수 있으니\n잠시후에 다시 접속해 주십시요. [1]");
+                    customDialog.setNegativeButtonText("다시시도");
+                    customDialog.setPositiveButtonText("종료");
+                    customDialog.showCustomDialog();
+                    // negativeButton
+                    customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            customDialog.dismissDialog();
+                            exitApp();
+                        }
+                    });
+                    // positiveButton
+                    customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            customDialog.dismissDialog();
+                            exitApp();
+                        }
+                    });
+                }
+
+                return setResult;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.d("MainActivity:setPhoneInfo", "onPostExecute : " + result );
+
+                JSONObject jsonObject = null;
+
+                try {
+                    jsonObject = new JSONObject(result );
+                    String statCd = jsonObject.getString("statCd" );
+                    String statMsg = jsonObject.getString("statMsg" );
+                    String verNo = jsonObject.getString("verNo" );
+                    String updNeedYn = jsonObject.getString("updNeedYn" );
+                    Log.d("SplashActivity:Handler", "statCd : " + statCd );
+                    Log.d("SplashActivity:Handler", "statMsg : " + statMsg );
+                    Log.d("SplashActivity:Handler", "verNo : " + verNo );
+                    Log.d("SplashActivity:Handler", "updNeedYn : " + updNeedYn );
+
+                    // MainActivity.versionNumber
+                    // 필수 업데이트 체크
+                    if("Y".equals(updNeedYn) && MainActivity.versionNumber < Integer.valueOf(verNo) ) {
+                        CustomDialog customDialog = new CustomDialog(SplashActivity.this );
+                        customDialog.setTitle("알림");
+                        customDialog.setMessage("필수 업데이트가 있습니다.\n업데이트 하시겠습니까?" );
+                        customDialog.setNegativeButtonText("종료");
+                        customDialog.setPositiveButtonText("업데이트");
+                        customDialog.showCustomDialog();
+                        // negativeButton
+                        customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                customDialog.dismissDialog();
+                                exitApp();
+                            }
+                        });
+                        // positiveButton
+                        customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                customDialog.dismissDialog();
+                                // 업데이트 처리
+                                exitApp();
+                            }
+                        });
+                    } else {
+                        if(Constant.serverStatusSuccess.equals(statCd) ) {
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class );
+                            startActivity(intent );
+                            finish();
+
+                        } else {
+                            CustomDialog customDialog = new CustomDialog(SplashActivity.this );
+                            customDialog.setTitle("알림");
+                            customDialog.setMessage(statMsg );
+                            customDialog.setNegativeButtonText("다시시도");
+                            customDialog.setPositiveButtonText("종료");
+                            customDialog.showCustomDialog();
+                            // negativeButton
+                            customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    customDialog.dismissDialog();
+                                    checkServerStatus();
+                                }
+                            });
+                            // positiveButton
+                            customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    customDialog.dismissDialog();
+                                    exitApp();
+                                }
+                            });
+                        }
+                    }
+
+                } catch (Exception e) {
+
+                    CustomDialog customDialog = new CustomDialog(SplashActivity.this );
+                    customDialog.setTitle("알림");
+                    customDialog.setMessage("서버접속 오류입니다.\n네트웍 상태를 확인하시거나\n네트웍은 문제가 없으실 경우\n서버작업중일수 있으니\n잠시후에 다시 접속해 주십시요. [2]");
+                    customDialog.setNegativeButtonText("다시시도");
+                    customDialog.setPositiveButtonText("종료");
+                    customDialog.showCustomDialog();
+                    // negativeButton
+                    customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            customDialog.dismissDialog();
+                            exitApp();
+                        }
+                    });
+                    // positiveButton
+                    customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            customDialog.dismissDialog();
+                            exitApp();
+                        }
+                    });
+                }
+            }
+        }.execute("");
+
     }
 
     // App 종료
@@ -112,82 +253,6 @@ public class SplashActivity extends AppCompatActivity {
         }
         System.exit(0 );
     }
-
-    // Thread Message
-    Handler handler = new Handler(Looper.getMainLooper() ) {
-        public void handleMessage(Message msg) {
-            Bundle bun = msg.getData();
-            String serverStatus = bun.getString("SERVER_STATUS");
-            Log.d("SplashActivity:Handler", "serverStatus : " + serverStatus );
-
-            JSONObject jsonObject = null;
-
-            try {
-                jsonObject = new JSONObject(serverStatus );
-                String code = jsonObject.getString("code" );
-                String message = jsonObject.getString("msg" );
-                Log.d("SplashActivity:Handler", "code : " + code );
-                Log.d("SplashActivity:Handler", "message : " + message );
-
-                if(Constant.serverStatusSuccess.equals(code) ) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class );
-                    startActivity(intent );
-                    finish();
-
-                } else {
-                    CustomDialog customDialog = new CustomDialog(SplashActivity.this );
-                    customDialog.setTitle("알림");
-                    customDialog.setMessage(message );
-                    customDialog.setNegativeButtonText("다시시도");
-                    customDialog.setPositiveButtonText("종료");
-                    customDialog.showCustomDialog();
-                    // negativeButton
-                    customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            customDialog.dismissDialog();
-                            checkServerStatus();
-                        }
-                    });
-                    // positiveButton
-                    customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            customDialog.dismissDialog();
-                            exitApp();
-                        }
-                    });
-
-                }
-
-            } catch (Exception e) {
-
-                CustomDialog customDialog = new CustomDialog(SplashActivity.this );
-                customDialog.setTitle("알림");
-                customDialog.setMessage("서버접속 오류입니다.\n네트웍 상태를 확인하시거나\n네트웍은 문제가 없으실 경우\n서버작업중일수 있으니\n잠시후에 다시 접속해 주십시요.");
-                customDialog.setNegativeButtonText("다시시도");
-                customDialog.setPositiveButtonText("종료");
-                customDialog.showCustomDialog();
-                // negativeButton
-                customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        customDialog.dismissDialog();
-                        exitApp();
-                    }
-                });
-                // positiveButton
-                customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        customDialog.dismissDialog();
-                        exitApp();
-                    }
-                });
-            }
-
-        }
-    };
 
 }
 

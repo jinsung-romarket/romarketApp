@@ -79,7 +79,7 @@ public class ZoomActivity extends AppCompatActivity {
                 baseSize = 4000;
             }
 
-            if (imgWidth > baseSize || imgHeight > baseSize){
+            if (imgWidth > baseSize || imgHeight > baseSize) {
                 //고행사도 이미지는 Bitmap too large to be uploaded into a texture 오류발생...
                 baseSize = baseSize -10;
                 if (imgWidth > imgHeight) {

@@ -1,12 +1,10 @@
 package kr.co.romarket;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
@@ -24,14 +22,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -41,13 +39,14 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-
+import kr.co.romarket.common.RomarketUtil;
+import kr.co.romarket.common.ThreadTask;
 import kr.co.romarket.config.Constant;
 
 public class MainActivity extends AppCompatActivity {
@@ -79,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
     // App 확인
     private LifecycleObserver lifecycleObserver = null;
     public static boolean isBackGround = true;
+
+    // Cookie
+    public static CookieManager cookieManager;
 
     final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
@@ -117,6 +119,17 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    // App 종료
+    private void exitApp () {
+        moveTaskToBack(true );
+        if(Build.VERSION.SDK_INT >= 21 ) {
+            finishAndRemoveTask();
+        } else {
+            finish();
+        }
+        System.exit(0 );
+    }
 
     private void setupLifeCycleObserver() {
         this.lifecycleObserver = new CycleListener();
@@ -199,42 +212,151 @@ public class MainActivity extends AppCompatActivity {
 
         mainWebView.clearCache(true);
 
-        StringBuffer urlBuf = new StringBuffer();
-        String pageUrl = Constant.mainViewUrl;
-        if("TODAY".equals(this.pPageCode) ) {
-            pageUrl = Constant.todayViewUrl;
+        // Cookie Set
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            CookieSyncManager.createInstance(this);
         }
+        setCookieAllow(mainWebView );
+        Log.d("MainActivity:onCreate", "this.cookieManager : " + this.cookieManager );
 
-        //TEST
-        // urlBuf.append(Constant.serverUrl );
-        // urlBuf.append("/main_test.php" );
-        // urlBuf.append(Constant.checkServerUrl );
+        // 서버로 폰정보 전송
+        setPhoneInfo();
 
-        //
-        urlBuf.append("https://app.ro-market.com" );
-        urlBuf.append(pageUrl );
+    }
 
-        // Param
-        urlBuf.append("?").append("dv_kind=").append("android" );
-        urlBuf.append("&").append("group_id=").append("" );
-        urlBuf.append("&").append("dv_id=").append("" );
-        urlBuf.append("&").append("and_id=").append(this.andId );
-        urlBuf.append("&").append("fcm_id=").append(this.fcmId );
-        urlBuf.append("&").append("dv_ver=").append(this.versionNumber );
-        this.pShopSeq = "2";
-        if(StringUtils.isNotEmpty(this.pShopSeq) ) {
-            urlBuf.append("&").append("p_shop_seq=").append(this.pShopSeq );
+    private void setCookieAllow( WebView webView) {
+        try {
+            this.cookieManager = CookieManager.getInstance();
+            this.cookieManager.setAcceptCookie(true);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                this.cookieManager.setAcceptThirdPartyCookies(webView, true);
+            }
+        } catch (Exception e) {
+
         }
+    }
 
-        Log.d("MainActivity:onCreate", "urlBuf : " + urlBuf.toString() );
+    // 서버로 폰정보 전송
+    public void setPhoneInfo () {
 
-        mainWebView.loadUrl(urlBuf.toString() );
+        new ThreadTask<String, String>() {
+            @Override
+            protected void onPreExecute() {
 
+            }
+
+            @Override
+            protected String doInBackground(String arg) {
+                String setResult = null;
+                StringBuffer urlBuf = new StringBuffer();
+                urlBuf.append(Constant.serverUrl );
+                urlBuf.append(Constant.setInfoUrl );
+
+                urlBuf.append("?").append("dvKind=").append("android" );
+                urlBuf.append("&").append("groupId=").append("" );
+                urlBuf.append("&").append("dvId=").append("" );
+                urlBuf.append("&").append("andId=").append(MainActivity.andId );
+                urlBuf.append("&").append("fcmId=").append(MainActivity.fcmId );
+                urlBuf.append("&").append("appVer=").append(MainActivity.versionNumber );
+
+                // MainActivity.pShopSeq = "2";
+                if(StringUtils.isNotEmpty(MainActivity.pShopSeq) ) {
+                    urlBuf.append("&").append("shopSeq=").append(MainActivity.pShopSeq );
+                }
+
+                try {
+                    Log.d("MainActivity:setPhoneInfo", "urlBuf : " + urlBuf.toString() );
+                    setResult = RomarketUtil.httpConnect(urlBuf.toString() , null );
+                    Log.d("MainActivity:setPhoneInfo", "setResult : " + setResult );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d("MainActivity:setPhoneInfo", "exception : " + e.getMessage() );
+                }
+
+                return setResult;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.d("MainActivity:setPhoneInfo", "onPostExecute : " + result );
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result );
+                    String dvId = jsonObject.getString("dvId" );
+                    String shopSeq = jsonObject.getString("shopSeq" );
+                    Log.d("MainActivity:onPostExecute", "dvId : " + dvId );
+                    Log.d("MainActivity:onPostExecute", "shopSeq : " + shopSeq );
+
+                    if(StringUtils.isNotEmpty(dvId) ) {
+                        StringBuffer urlBuf = new StringBuffer();
+                        String pageUrl = Constant.mainViewUrl;
+                        if("TODAY".equals(MainActivity.pPageCode) ) {
+                            pageUrl = Constant.todayViewUrl;
+                        }
+                        urlBuf.append(Constant.serverUrl );
+                        urlBuf.append(pageUrl );
+
+                        // cookie Set
+                        // cookieManager.removeAllCookies(null );
+                        cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "dvId", dvId));
+                        cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "shopSeq", shopSeq));
+
+                        Log.d("MainActivity:onPostExecute", "urlBuf : " + urlBuf.toString() );
+                        MainActivity.mainWebView.loadUrl(urlBuf.toString() );
+                    } else {
+
+                        CustomDialog customDialog = new CustomDialog(MainActivity.this );
+                        customDialog.setTitle("알림");
+                        customDialog.setMessage("서버접속 오류입니다.\n네트웍 상태를 확인하시거나\n네트웍은 문제가 없으실 경우\n서버작업중일수 있으니\n잠시후에 다시 접속해 주십시요.");
+                        customDialog.setNegativeButtonText("");
+                        customDialog.setPositiveButtonText("종료");
+                        customDialog.showCustomDialog();
+                        // negativeButton
+                        customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                customDialog.dismissDialog();
+                                exitApp();
+                            }
+                        });
+                        // positiveButton
+                        customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                customDialog.dismissDialog();
+                                exitApp();
+                            }
+                        });
+
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+
+            }
+
+        }.execute("");
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            CookieSyncManager.getInstance().stopSync();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            CookieSyncManager.getInstance().startSync();
+        }
     }
 
     /** Back Button */
@@ -271,7 +393,6 @@ public class MainActivity extends AppCompatActivity {
                     integrator.setBeepEnabled(true);
                     integrator.setBarcodeImageEnabled(false);
                     integrator.initiateScan();
-
                 }
 
                 return;
@@ -397,6 +518,9 @@ public class MainActivity extends AppCompatActivity {
             settings.setJavaScriptCanOpenWindowsAutomatically(true);
             settings.setSupportMultipleWindows(true);
 
+            // 쿠키허용
+            setCookieAllow(newWebView );
+
             // final Dialog dialog = new Dialog(view.getContext(), R.style.Theme_DialogFullScreen); Theme_Translucent_NoTitleBar_Fullscreen
             final Dialog dialog = new Dialog(view.getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen );
             dialog.setContentView(newWebView);
@@ -442,41 +566,43 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
-            AlertDialog dialog = new AlertDialog.Builder(view.getContext()).
-                    setTitle("로마켓").
-                    setMessage(message).
-                    setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            final JsResult finalRes = result;
+            new AlertDialog.Builder(view.getContext())
+                    .setTitle("로마켓")
+                    .setMessage(message)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //do nothing
+                            finalRes.confirm();
                         }
-                    }).create();
-            dialog.show();
-            result.confirm();
+                    })
+                    .create()
+                    .show();
             return true;
         }
         @Override
         public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
+            final JsResult finalRes = result;
             new AlertDialog.Builder(view.getContext())
                     .setTitle("로마켓")
                     .setMessage(message)
                     .setPositiveButton(android.R.string.ok,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    result.confirm();
+                                    finalRes.confirm();
                                 }
                             })
                     .setNegativeButton(android.R.string.cancel,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    result.cancel();
+                                    finalRes.cancel();
                                 }
                             })
                     .create()
                     .show();
             return true;
         }
-    }
+    } // class CustomWebChromeClient
 
     public class CustomWebViewClient extends WebViewClient {
         @Override
@@ -517,6 +643,14 @@ public class MainActivity extends AppCompatActivity {
             if(mainImageView.getVisibility() == View.VISIBLE ) {
                 mainImageView.setVisibility(View.GONE );
             }
+
+            // Cooike
+            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                CookieSyncManager.getInstance().sync();
+            } else {
+                CookieManager.getInstance().flush();
+            }
+
         }
 
         @Override
@@ -549,8 +683,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
-
-    }
-
+    } // class CustomWebViewClient
 
 }
