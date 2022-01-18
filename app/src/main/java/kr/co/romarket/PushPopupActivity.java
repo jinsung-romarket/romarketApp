@@ -59,10 +59,10 @@ public class PushPopupActivity extends AppCompatActivity  {
         // Data Load
         Bundle extras = getIntent().getExtras();
         String msg = extras.getString("msg");
-        String isSound = extras.getString("is_sound");
-        this.msgKind = extras.getString("msg_kind");
-        this.shopSeq = extras.getString("shop_seq");
-        this.shopName = extras.getString("shop_name");
+        String isSound = extras.getString("isSound");
+        this.msgKind = extras.getString("msgKind");
+        this.shopSeq = extras.getString("shopSeq");
+        this.shopName = extras.getString("shopName");
 
         // 소리 및 진동 설정
         if ("Y".equals(isSound) ) {

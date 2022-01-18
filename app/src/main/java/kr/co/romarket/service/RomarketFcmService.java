@@ -128,6 +128,7 @@ public class RomarketFcmService extends FirebaseMessagingService {
         String fcmConnUrl = null;
         String fcmShopSeq = null;
         String fcmShopName = null;
+        String fcmTitle = null;
 
         try {
             JSONObject jresponse = new JSONObject(jsonMsg);
@@ -151,7 +152,16 @@ public class RomarketFcmService extends FirebaseMessagingService {
         Log.d("RomarketFcmService:onMessageReceived", "MainActivity.andId : " + MainActivity.andId );
         Log.d("RomarketFcmService:onMessageReceived", "MainActivity.versionNumber : " + MainActivity.versionNumber );
 
-        showTopNoti("title", fcmMsg, fcmConnUrl, fcmMsgKind );
+        fcmTitle = "";
+        if("IMGPOPUP".equals(fcmMsgKind) ) {
+            // fcmTitle = fcmShopName + " 할인정보가 도착했습니다.";
+            fcmTitle = "할인정보가 도착했습니다";
+            fcmMsg = String.format("[%s] 할인정보", fcmShopName);
+        } else {
+            fcmTitle = "주문확인";
+        }
+
+        showTopNoti(fcmTitle, fcmMsg, fcmConnUrl, fcmMsgKind, fcmShopSeq );
 
         // 앱이 실행중 인지에 따라
         Log.d("RomarketFcmService:onMessageReceived", "MainActivity.isBackGround : " + MainActivity.isBackGround);
@@ -163,22 +173,22 @@ public class RomarketFcmService extends FirebaseMessagingService {
                 Intent imgPop = new Intent(MainActivity.mainActivityContext, ImagePopupActivity.class);
                 imgPop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 imgPop.putExtra("msg", fcmMsg);
-                imgPop.putExtra("conn_url", fcmConnUrl);
-                imgPop.putExtra("msg_kind", fcmMsgKind);
-                imgPop.putExtra("shop_seq", fcmShopSeq);
-                imgPop.putExtra("shop_name", fcmShopName);
-                imgPop.putExtra("is_sound", "Y");
+                imgPop.putExtra("connUrl", fcmConnUrl);
+                imgPop.putExtra("msgKind", fcmMsgKind);
+                imgPop.putExtra("shopSeq", fcmShopSeq);
+                imgPop.putExtra("shopName", fcmShopName);
+                imgPop.putExtra("isSound", "Y");
 
                 startActivity(imgPop);
             } else {
                 Intent pushPop = new Intent(MainActivity.mainActivityContext, PushPopupActivity.class );
                 pushPop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 pushPop.putExtra("msg", fcmMsg );
-                pushPop.putExtra("conn_url", fcmConnUrl );
-                pushPop.putExtra("msg_kind", fcmMsgKind );
-                pushPop.putExtra("shop_seq", fcmShopSeq );
-                pushPop.putExtra("shop_name", fcmShopName );
-                pushPop.putExtra("is_sound", "Y" );
+                pushPop.putExtra("connUrl", fcmConnUrl );
+                pushPop.putExtra("msgKind", fcmMsgKind );
+                pushPop.putExtra("shopSeq", fcmShopSeq );
+                pushPop.putExtra("shopName", fcmShopName );
+                pushPop.putExtra("isSound", "Y" );
 
                 startActivity(pushPop );
             }
@@ -189,7 +199,7 @@ public class RomarketFcmService extends FirebaseMessagingService {
 
     }
 
-    private void showTopNoti (String title, String msg, String url, String msgKind ) {
+    private void showTopNoti (String title, String msg, String url, String msgKind, String shopSeq ) {
         builder = null;
         manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         //버전 오레오 이상일 경우
@@ -204,10 +214,14 @@ public class RomarketFcmService extends FirebaseMessagingService {
         // Notification Action Add
         Intent intent = new Intent(getApplicationContext(), MainActivity.class );
         if("IMGPOPUP".equals(msgKind) ) {
-            intent.putExtra("pageCode", Constant.PAGE_CODE_MAIN);
+            intent.putExtra("pageCode", Constant.PAGE_CODE_EVENT );
         } else {
-            intent.putExtra("pageCode", Constant.PAGE_CODE_MAIN);
+            intent.putExtra("pageCode", Constant.PAGE_CODE_MAIN );
         }
+        if(StringUtils.isNotEmpty(shopSeq) ) {
+            intent.putExtra("shopSeq", shopSeq );
+        }
+
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 101, intent, PendingIntent.FLAG_UPDATE_CURRENT );
 
         // 알림창 제목

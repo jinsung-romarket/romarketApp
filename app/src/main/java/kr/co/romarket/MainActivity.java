@@ -26,8 +26,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.JsResult;
@@ -37,6 +40,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -143,6 +147,19 @@ public class MainActivity extends AppCompatActivity {
         setupLifeCycleObserver();
 
         setContentView(R.layout.activity_main);
+
+        // 혹시 Extra로 들어온 데이터가 있는지 확인
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            if(StringUtils.isNotEmpty(extras.getString("shopSeq")) ) {
+                this.pShopSeq = extras.getString("shopSeq");
+                Log.d("MainActivity:onCreate", "extras.shopSeq : " + this.pShopSeq );
+            }
+            if(StringUtils.isNotEmpty(extras.getString("pageCode")) ) {
+                this.pPageCode = extras.getString("pageCode");
+                Log.d("MainActivity:onCreate", "extras.pageCode : " + this.pPageCode );
+            }
+        }
 
         // 파라메터 log
         Log.d("MainActivity:onCreate", "andId : " + this.andId);
@@ -286,16 +303,30 @@ public class MainActivity extends AppCompatActivity {
                     jsonObject = new JSONObject(result );
                     String dvId = jsonObject.getString("dvId" );
                     String shopSeq = jsonObject.getString("shopSeq" );
+                    String memberName = jsonObject.getString("memberName");
+                    String memberSeq = jsonObject.getString("memberSeq");
                     Log.d("MainActivity:onPostExecute", "dvId : " + dvId );
                     Log.d("MainActivity:onPostExecute", "shopSeq : " + shopSeq );
+
+                    if(StringUtils.isNotEmpty(memberName) && StringUtils.isNotEmpty(memberSeq) ) {
+                        String toastMsg = String.format("%s님 환영합니다.", memberName );
+                        // Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_LONG ).show();
+                        customTostView(toastMsg );
+                    }
 
                     if(StringUtils.isNotEmpty(dvId) ) {
                         StringBuffer urlBuf = new StringBuffer();
                         String pageUrl = Constant.mainViewUrl;
-                        if("TODAY".equals(MainActivity.pPageCode) ) {
+                        if(Constant.PAGE_CODE_TODAY.equals(MainActivity.pPageCode) ) {
                             pageUrl = Constant.todayViewUrl;
+                        } else if (Constant.PAGE_CODE_EVENT.equals(MainActivity.pPageCode) ) {
+                            pageUrl = Constant.evtViewUrl;
+                        } else if (Constant.PAGE_CODE_CART.equals(MainActivity.pPageCode) ) {
+                            pageUrl = Constant.cartViewUrl;
                         }
+
                         urlBuf.append(Constant.serverUrl );
+                        // urlBuf.append("https://app.ro-market.com" );
                         urlBuf.append(pageUrl );
 
                         // cookie Set
@@ -316,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         Log.d("MainActivity:onPostExecute", "loginOption : " + loginOption );
                         if(StringUtils.isEmpty(loginOption) || "NO_AUTO_LOGIN".equals(loginOption) ) {
-                            cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "loginOption", "NO_LOGIN"));
+                            cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "loginOption", "AUTO_LOGIN"));
                         }
                         cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "dvId", dvId));
                         cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "shopSeq", shopSeq));
@@ -515,6 +546,20 @@ public class MainActivity extends AppCompatActivity {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, mLocationListener );
 
         }
+    }
+
+    public void customTostView (String msg ) {
+        LayoutInflater inflater = getLayoutInflater();
+
+        View toastDesign = inflater.inflate(R.layout.custom_toast, (ViewGroup)findViewById(R.id.toast_design_root));
+        TextView text = toastDesign.findViewById(R.id.toastMsgTextView );
+        text.setText(msg );
+
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 30); // CENTER를 기준으로 0, 0 위치에 메시지 출력
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(toastDesign);
+        toast.show();
     }
 
     /** Custom Class -------------------------------------------------------------------- **/

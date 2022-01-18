@@ -68,12 +68,12 @@ public class ImagePopupActivity extends AppCompatActivity {
         imgPopContext = this;
         Bundle extras = getIntent().getExtras();
         String msg = extras.getString("msg");
-        String connUrl = extras.getString("conn_url");
-        String shopSeq = extras.getString("shop_seq");
+        String connUrl = extras.getString("connUrl");
+        String shopSeq = extras.getString("shopSeq");
         this.tmpShopSeq = shopSeq;
-        String shopName = extras.getString("shop_name");
-        String msgKind = extras.getString("msg_kind");
-        String isSound = extras.getString("is_sound");
+        String shopName = extras.getString("shopName");
+        String msgKind = extras.getString("msgKind");
+        String isSound = extras.getString("isSound");
 
         if (StringUtils.isNotEmpty(shopName)) {
             this.tmpTitleMsg = shopName;
