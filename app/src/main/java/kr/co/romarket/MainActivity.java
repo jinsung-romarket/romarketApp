@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
     public static ImageView mainImageView;
 
     public static Context mainActivityContext;
-    public static Activity mainActivity;
 
     //
     public static String mZoomImgSrc;
