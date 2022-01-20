@@ -11,8 +11,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp" >
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="266dp">
 
     </WebView>
 
@@ -21,9 +21,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/splach_image"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
         tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:id="@+id/mainWaitCircle"
+            android:visibility="visible"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:indeterminateDrawable="@drawable/circle_progress"
+            android:indeterminateDuration="1000"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

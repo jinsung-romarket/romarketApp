@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -40,6 +41,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Cookie
     public static CookieManager cookieManager;
+
+    // Splash Image
+    public static Bitmap mSplashImg;
+
+    public static ProgressBar mMainWaitCircle;
 
     final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
@@ -170,10 +178,14 @@ public class MainActivity extends AppCompatActivity {
         this.mainActivityContext = this;
 
         // 화면 객체
-        mainWebView = (WebView) findViewById(R.id.mainWebView );
-        mainImageView = (ImageView) findViewById(R.id.splashImgViewMain );
+        this.mainWebView = (WebView) findViewById(R.id.mainWebView );
+        this.mainImageView = (ImageView) findViewById(R.id.splashImgViewMain );
+        this.mMainWaitCircle = (ProgressBar) findViewById(R.id.mainWaitCircle );
 
         // Splash 이미지 변경
+        this.mainImageView.setImageBitmap(this.mSplashImg );
+
+        /*
         double rnd = Math.random();
         int splashIdx = (int)(rnd * 100) % 2;
         if(splashIdx == 0) {
@@ -181,59 +193,60 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mainImageView.setImageResource(R.drawable.main_splash02);
         }
+        */
 
         // 위치 기반
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        this.mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Web View 설정
         // 자바스크립트 사용여부
-        mainWebView.getSettings().setJavaScriptEnabled(true );
+        this.mainWebView.getSettings().setJavaScriptEnabled(true );
         // 자바스크립트가 창을 자동으로 열 수 있게할지 여부
-        mainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true );
+        this.mainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true );
         // 이미지 자동 로드
-        mainWebView.getSettings().setLoadsImagesAutomatically(true );
+        this.mainWebView.getSettings().setLoadsImagesAutomatically(true );
         // wide viewport 설정
         // 설정값이 false인 경우, layout 너비는 디바이스 픽셀에 맞추어 설정된다.
         // 값이 true이고 페이지에 뷰포트 메타 태그가 있으면 태그에 지정된 너비 값이 사용된다.
         // 페이지에 태그가 없거나 너비가 없는 경우 넓은 뷰포트가 사용된다.
-        mainWebView.getSettings().setUseWideViewPort(true );
+        this.mainWebView.getSettings().setUseWideViewPort(true );
         //컨텐츠가 웹뷰보다 클때 스크린크기에 맞추기
-        mainWebView.getSettings().setLoadWithOverviewMode(true );
+        this.mainWebView.getSettings().setLoadWithOverviewMode(true );
         // 줌설정
-        mainWebView.getSettings().setSupportZoom(false );
+        this.mainWebView.getSettings().setSupportZoom(false );
         // 줌아이콘
-        mainWebView.getSettings().setBuiltInZoomControls(false );
+        this.mainWebView.getSettings().setBuiltInZoomControls(false );
         // 캐시설정
         // LOAD_CACHE_ELSE_NETWORK : 캐시 기간만료 시 네트워크 접속
         // LOAD_CACHE_ONLY : 캐시만 불러옴 (네트워크 사용 X)
         // LOAD_DEFAULT : 기본 모드, 캐시 사용, 기간 만료 시 네트워크 사용
         // LOAD_NO_CACHE : 캐시모드 사용안함
         // LOAD_NORMAL : 기본모드 캐시 사용 @Deprecated
-        mainWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE );
+        this.mainWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE );
         // 앱내부의 캐시 사용 여부
-        mainWebView.getSettings().setAppCacheEnabled(false );
+        this.mainWebView.getSettings().setAppCacheEnabled(false );
         // 로컬 스토리지 사용여부
-        mainWebView.getSettings().setDomStorageEnabled(true );
+        this.mainWebView.getSettings().setDomStorageEnabled(true );
         // 파일 액세스 허용 여부
-        mainWebView.getSettings().setAllowFileAccess(true );
+        this.mainWebView.getSettings().setAllowFileAccess(true );
         // 멀티윈도우를 지원할지 여부
-        mainWebView.getSettings().setSupportMultipleWindows(true );
+        this.mainWebView.getSettings().setSupportMultipleWindows(true );
         // 웹뷰를 통해 Content URL 에 접근할지 여부
-        mainWebView.getSettings().setAllowContentAccess(true );
+        this.mainWebView.getSettings().setAllowContentAccess(true );
         // 내부에 @JavascriptInterface 메서드 구현
-        mainWebView.addJavascriptInterface(new AndroidBridge(), "android");
+        this.mainWebView.addJavascriptInterface(new AndroidBridge(), "android");
 
         // Custom Web View
-        mainWebView.setWebChromeClient(new CustomWebChromeClient() );
-        mainWebView.setWebViewClient(new CustomWebViewClient() );
+        this.mainWebView.setWebChromeClient(new CustomWebChromeClient() );
+        this.mainWebView.setWebViewClient(new CustomWebViewClient() );
 
-        mainWebView.clearCache(true);
+        this.mainWebView.clearCache(true);
 
         // Cookie Set
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             CookieSyncManager.createInstance(this);
         }
-        setCookieAllow(mainWebView );
+        setCookieAllow(this.mainWebView );
         Log.d("MainActivity:onCreate", "this.cookieManager : " + this.cookieManager );
 
         // 서버로 폰정보 전송
@@ -260,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
         new ThreadTask<String, String>() {
             @Override
             protected void onPreExecute() {
-
+                MainActivity.mMainWaitCircle.setVisibility(View.VISIBLE );
             }
 
             @Override
@@ -297,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result) {
                 Log.d("MainActivity:setPhoneInfo", "onPostExecute : " + result );
+                MainActivity.mMainWaitCircle.setVisibility(View.INVISIBLE );
 
                 JSONObject jsonObject = null;
                 try {
@@ -307,12 +321,6 @@ public class MainActivity extends AppCompatActivity {
                     String memberSeq = jsonObject.getString("memberSeq");
                     Log.d("MainActivity:onPostExecute", "dvId : " + dvId );
                     Log.d("MainActivity:onPostExecute", "shopSeq : " + shopSeq );
-
-                    if(StringUtils.isNotEmpty(memberName) && StringUtils.isNotEmpty(memberSeq) ) {
-                        String toastMsg = String.format("%s님 환영합니다.", memberName );
-                        // Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_LONG ).show();
-                        customTostView(toastMsg );
-                    }
 
                     if(StringUtils.isNotEmpty(dvId) ) {
                         StringBuffer urlBuf = new StringBuffer();
@@ -331,7 +339,6 @@ public class MainActivity extends AppCompatActivity {
 
                         // cookie Set
                         // cookieManager.removeAllCookies(null );
-
                         String ckStr = cookieManager.getCookie(Constant.serverUrl);
                         String loginOption = null;
                         Log.d("MainActivity:onPostExecute", "ckStr : " + ckStr );
@@ -347,12 +354,31 @@ public class MainActivity extends AppCompatActivity {
                         }
                         Log.d("MainActivity:onPostExecute", "loginOption : " + loginOption );
                         if(StringUtils.isEmpty(loginOption) || "NO_AUTO_LOGIN".equals(loginOption) ) {
-                            cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "loginOption", "AUTO_LOGIN"));
+                            loginOption = "AUTO_LOGIN";
+                            cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "loginOption", loginOption));
                         }
                         cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "dvId", dvId));
-                        cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "shopSeq", shopSeq));
+                        if(StringUtils.isNotEmpty(shopSeq) ) {
+                            Log.d("MainActivity:onPostExecute", "cookie shopSeq : " + shopSeq );
+                            cookieManager.setCookie(Constant.serverUrl, String.format("%s=%s", "shopSeq", shopSeq));
+                        }
+
+                        // Toast Message
+                        if(StringUtils.isNotEmpty(memberName) && StringUtils.isNotEmpty(memberSeq) ) {
+                            String toastMsg = String.format("%s님 환영합니다.", memberName );
+                            // Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_LONG ).show();
+                            customToastView(toastMsg );
+                        } else {
+                            if ("LOGOUT".equals(loginOption)) {
+                                String toastMsg = String.format("로그인후 사용해주세요.", memberName);
+                                // Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_LONG ).show();
+                                customToastView(toastMsg);
+                            }
+                        }
 
                         Log.d("MainActivity:onPostExecute", "urlBuf : " + urlBuf.toString() );
+                        MainActivity.mMainWaitCircle.setVisibility(View.VISIBLE );
+
                         MainActivity.mainWebView.loadUrl(urlBuf.toString() );
                     } else {
 
@@ -421,7 +447,8 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 backPressedTime = currentTime;
-                Toast.makeText(getApplicationContext(), "한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show();
+                customToastView("한번 더 누르면 앱이 종료됩니다.");
             }
         }
     }
@@ -451,13 +478,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MainActivity:onRequestPermissionsResult", "REQUEST_CODE_LOCALTION : " );
 
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "앱 실행을 위한 권한이 설정 되었습니다", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(this, "앱 실행을 위한 권한이 설정 되었습니다", Toast.LENGTH_LONG).show();
+                    customToastView("앱 실행을 위한 권한이 설정 되었습니다" );
 
                     mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 1, mLocationListener );
                     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, mLocationListener );
 
                 } else {
-                    Toast.makeText(this, "앱 실행을 위한 권한이 취소 되었습니다", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(this, "앱 실행을 위한 권한이 취소 되었습니다", Toast.LENGTH_LONG).show();
+                    customToastView("앱 실행을 위한 권한이 취소 되었습니다" );
 
                 }
 
@@ -474,31 +503,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("MainActivity:onActivityResult", "requestCode : " + requestCode );
 
-        // 바코드 리딩 처리
-        if (resultCode != 0) {
-            String barcode = data.getStringExtra("SCAN_RESULT");
-            String barcodeFormat = data.getStringExtra("SCAN_RESULT_FORMAT");
+        if(requestCode == Constant.RESULT_REQUEST_SCAN ) {
+            if(resultCode == RESULT_OK ) {
+                String barcode = data.getStringExtra("SCAN_BARCODE");
+                String barcodeType = data.getStringExtra("BARCODE_TYPE");
+                Log.d("MainActivity:onActivityResult", "barcode : " + barcode );
+                Log.d("MainActivity:onActivityResult", "barcodeType : " + barcodeType );
 
-            Log.d("MainActivity:onActivityResult", "barcodeFormat : " + barcodeFormat);
-            Log.d("MainActivity:onActivityResult", "barcode : " + barcode);
+                if(StringUtils.isNotEmpty(barcode) ) {
+                    // customToastView(barcode );
+                    StringBuffer barcodeUrl = new StringBuffer();
+                    barcodeUrl.append("javascript:");
+                    barcodeUrl.append("barcodeScanResult (");
+                    barcodeUrl.append("'").append(barcode).append("'");
+                    barcodeUrl.append(");");
 
-            if(StringUtils.isNotEmpty(barcode) && "EAN_13".equals(barcodeFormat) ) {
-                // mWebView.loadUrl("javascript:response_bar_code('"+str_bar_code+"')");
+                    Log.d("MainActivity:onActivityResult", "barcodeUrl : " + barcodeUrl.toString() );
+                    mainWebView.loadUrl(barcodeUrl.toString() );
 
-                StringBuffer barcodeUrl = new StringBuffer();
-                barcodeUrl.append("javascript:");
-                barcodeUrl.append("response_scan (");
-                barcodeUrl.append("'").append(barcode).append("'");
-                barcodeUrl.append(");");
-
-                Log.d("MainActivity:onActivityResult", "barcodeUrl : " + barcodeUrl.toString() );
-                mainWebView.loadUrl(barcodeUrl.toString() );
-
-            } else {
-
+                }
             }
         }
+
     }
 
     /** -------------------------------------------------------------------- **/
@@ -519,13 +547,19 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 23 && ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ) {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA }, Constant.REQUEST_CODE_CAMERA );
         } else {
+            /*
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+            integrator.setOrientationLocked(true );
             integrator.setPrompt("붉은선에 바코드를 맞춰주세요.");
             integrator.setCameraId(0);
             integrator.setBeepEnabled(true);
             integrator.setBarcodeImageEnabled(false);
             integrator.initiateScan();
+            */
+
+            Intent intent = new Intent(MainActivity.this, ScanActivity.class );
+            startActivityForResult(intent, Constant.RESULT_REQUEST_SCAN );
         }
     }
 
@@ -534,7 +568,8 @@ public class MainActivity extends AppCompatActivity {
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
             Log.d("MainActivity:requestLocation", "REQUEST_CODE_LOCALTION 1 : " );
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다", Toast.LENGTH_LONG).show();
+                // Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다", Toast.LENGTH_LONG).show();
+                customToastView("앱 실행을 위해서는 권한을 설정해야 합니다" );
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, Constant.REQUEST_CODE_LOCALTION );
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, Constant.REQUEST_CODE_LOCALTION );
@@ -548,7 +583,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void customTostView (String msg ) {
+    public void customToastView (String msg ) {
         LayoutInflater inflater = getLayoutInflater();
 
         View toastDesign = inflater.inflate(R.layout.custom_toast, (ViewGroup)findViewById(R.id.toast_design_root));
@@ -697,6 +732,12 @@ public class MainActivity extends AppCompatActivity {
             return super.shouldOverrideUrlLoading(view, request);
         }
 
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            Log.d("MainActivity:onPageStarted", "OK : " );
+        }
+
         /**
          * 웹페이지 로딩이 끝났을 때 처리
          */
@@ -704,7 +745,8 @@ public class MainActivity extends AppCompatActivity {
         public void onPageFinished(WebView view, String url) {
             Log.d("MainActivity:onPageFinished", "OK : " );
             if(mainImageView.getVisibility() == View.VISIBLE ) {
-                mainImageView.setVisibility(View.GONE );
+                mainImageView.setVisibility(View.GONE);
+                mMainWaitCircle.setVisibility(View.GONE);
             }
 
             // Cooike

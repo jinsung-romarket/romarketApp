@@ -10,6 +10,7 @@ public class Constant {
     public static String checkServerUrl = "/init/checkserver";
     public static String setInfoUrl = "/init/android/setinfo";
     public static String serverStatusSuccess = "0000";
+    public static String imgServerUrl = "http://dnmart.co.kr";
 
     public static String mainViewUrl = "/display/main";
     public static String todayViewUrl = "/display/today";
@@ -27,5 +28,7 @@ public class Constant {
     public static String PAGE_CODE_EVENT = "EVENT";
     public static String PAGE_CODE_ORDER = "ORDER";
     public static String PAGE_CODE_CART = "CART";
+
+    public static final int RESULT_REQUEST_SCAN = 1000;
 
 }

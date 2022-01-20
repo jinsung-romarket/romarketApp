@@ -6,14 +6,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="105dp"
+        android:layout_height="90dp"
         android:orientation="horizontal"
         android:background="@android:color/transparent" >
 
         <ImageView
             android:id="@+id/mawit_image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:background="@android:color/transparent"
             android:src="@drawable/mawit" />
 
@@ -23,11 +23,11 @@
         android:id="@+id/titleTextView"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:background="#FFC107"
+        android:background="#DAC86441"
         android:gravity="center"
         android:text="커스텀 다이얼로그"
-        android:textStyle="bold"
-        android:textSize="14dp" />
+        android:textSize="14dp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/messageTextView"
@@ -35,8 +35,8 @@
         android:layout_height="120dp"
         android:gravity="center"
         android:textColor="#000000"
-        android:background="#FFFFFF"
-        android:textSize="15dp" />
+        android:background="#CCCCCC"
+        android:textSize="13dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,9 +48,9 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_weight="1"
-            android:background="#9B9B9B"
+            android:background="#555555"
             android:gravity="center"
-            android:textColor="#000000"
+            android:textColor="#FFFFFF"
             android:textSize="14dp" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_weight="1"
-            android:background="#FFC107"
+            android:background="#C86441"
             android:gravity="center"
             android:textColor="#000000"
             android:textSize="14dp" />
