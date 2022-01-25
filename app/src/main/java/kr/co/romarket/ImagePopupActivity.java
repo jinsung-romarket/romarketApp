@@ -51,13 +51,13 @@ public class ImagePopupActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("ImagePopupActivity:onCreate", "Image Pop" );
+        Log.d("ImagePopupActivity", "onCreate:Image Pop" );
 
         int[] arrMaxTextureSize = new int[1];
         GLES10.glGetIntegerv(GL10.GL_MAX_TEXTURE_SIZE, arrMaxTextureSize, 0);
-        Log.d("ImagePopupActivity:onCreate", "arrMaxTextureSize[0] : " + arrMaxTextureSize[0]);
+        Log.d("ImagePopupActivity", "onCreate:arrMaxTextureSize[0] : " + arrMaxTextureSize[0]);
         if (arrMaxTextureSize[0] == 0) {
-            Log.d("ImagePopupActivity:onCreate", "인식못함, 재시도" );
+            Log.d("ImagePopupActivity", "onCreate:인식못함, 재시도" );
             GLES10.glGetIntegerv(GL11.GL_MAX_TEXTURE_SIZE, arrMaxTextureSize, 0);
         }
         if (arrMaxTextureSize[0] == 0){
@@ -82,13 +82,13 @@ public class ImagePopupActivity extends AppCompatActivity {
         }
         this.tmpSubjectMsg = "[정보]".concat(msg );
 
-        Log.d("ImagePopupActivity:onCreate", "connUrl : " + connUrl );
-        Log.d("ImagePopupActivity:onCreate", "msg : " + msg );
-        Log.d("ImagePopupActivity:onCreate", "shopSeq : " + shopSeq );
-        Log.d("ImagePopupActivity:onCreate", "shopName : " + shopName );
-        Log.d("ImagePopupActivity:onCreate", "this.tmpSubjectMsg : " + this.tmpSubjectMsg );
-        Log.d("ImagePopupActivity:onCreate", "this.tmpTitleMsg : " + this.tmpTitleMsg );
-        Log.d("ImagePopupActivity:onCreate", "isSound : " + isSound );
+        Log.d("ImagePopupActivity", "onCreate:connUrl : " + connUrl );
+        Log.d("ImagePopupActivity", "onCreate:msg : " + msg );
+        Log.d("ImagePopupActivity", "onCreate:shopSeq: : " + shopSeq );
+        Log.d("ImagePopupActivity", "onCreate:shopName : " + shopName );
+        Log.d("ImagePopupActivity", "onCreate:this.tmpSubjectMsg : " + this.tmpSubjectMsg );
+        Log.d("ImagePopupActivity", "onCreate:this.tmpTitleMsg : " + this.tmpTitleMsg );
+        Log.d("ImagePopupActivity", "onCreate:isSound : " + isSound );
 
         // 소리 및 진동 설정
         if ("Y".equals(isSound) ) {

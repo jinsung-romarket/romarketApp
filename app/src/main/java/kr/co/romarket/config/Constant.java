@@ -5,8 +5,9 @@ public class Constant {
     public static String schemeName = "romarket";
 
     // public static String serverUrl = "https://app.ro-market.com";
-    // public static String serverUrl = "http://192.168.45.100";
-    public static String serverUrl = "http://192.168.45.128";
+    public static String serverUrl = "http://192.168.45.100";
+    // public static String serverUrl = "http://192.168.45.146";
+
     public static String checkServerUrl = "/init/checkserver";
     public static String setInfoUrl = "/init/android/setinfo";
     public static String serverStatusSuccess = "0000";
@@ -16,6 +17,7 @@ public class Constant {
     public static String todayViewUrl = "/display/today";
     public static String evtViewUrl = "/display/evt";
     public static String cartViewUrl = "/cart/cart";
+    public static String orderViewUrl = "/order/orderNew";
 
     public static final int REQUEST_CODE_CAMERA = 1000;
     public static final int REQUEST_CODE_LOCALTION = 1001;

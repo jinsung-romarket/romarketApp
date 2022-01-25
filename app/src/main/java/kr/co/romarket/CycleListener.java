@@ -12,8 +12,8 @@ class CycleListener implements LifecycleObserver {
     public void onMoveToFoground(){
         // Moving to Foground…
         MainActivity.isBackGround = false;
-        Log.d("CycleListener:onMoveToFoground", "Moving to Foground" );
-        Log.d("CycleListener:onMoveToFoground", "isBackGround : " + MainActivity.isBackGround );
+        Log.d("CycleListener", "onMoveToFoground:Moving to Foground" );
+        Log.d("CycleListener", "onMoveToFoground:isBackGround : " + MainActivity.isBackGround );
 
     }
 
@@ -21,8 +21,8 @@ class CycleListener implements LifecycleObserver {
     public void onMoveToBackground() {
         // Moving to background…
         MainActivity.isBackGround = true;
-        Log.d("CycleListener:onMoveToBackground", "Moving to background");
-        Log.d("CycleListener:onMoveToFoground", "isBackGround : " + MainActivity.isBackGround );
+        Log.d("CycleListener", "onMoveToBackground:Moving to background");
+        Log.d("CycleListener", "onMoveToBackground:isBackGround : " + MainActivity.isBackGround );
     }
 
 } // end LifecycleObserver

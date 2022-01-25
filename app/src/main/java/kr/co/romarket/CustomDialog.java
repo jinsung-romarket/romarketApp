@@ -72,7 +72,7 @@ public class CustomDialog {
 
     public void showCustomDialog () {
         // 다이얼로그 생성
-        Log.d("CustomDialog:showCustomDialog", "code : " );
+        Log.d("CustomDialog", "showCustomDialog: " );
         this.dlg.show();
     }
 

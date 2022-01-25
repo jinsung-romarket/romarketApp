@@ -49,8 +49,8 @@ public class SplashActivity extends AppCompatActivity {
             MainActivity.pShopSeq = getIntent().getData().getQueryParameter("shop_seq");
             MainActivity.pPageCode = getIntent().getData().getQueryParameter("page_code");
         }
-        Log.d("SplashActivity:onCreate", "pShopSeq : " + MainActivity.pShopSeq );
-        Log.d("SplashActivity:onCreate", "pPageCode : " + MainActivity.pPageCode );
+        Log.d("SplashActivity", "onCreate:pShopSeq : " + MainActivity.pShopSeq );
+        Log.d("SplashActivity", "onCreate:pPageCode : " + MainActivity.pPageCode );
 
         // Version Name
         TextView mVersionName = (TextView) findViewById(R.id.mVersionName );
@@ -74,7 +74,7 @@ public class SplashActivity extends AppCompatActivity {
 
         // Gcm
         MainActivity.andId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d("SplashActivity:onCreate", "andId : " + MainActivity.andId);
+        Log.d("SplashActivity", "onCreate:andId : " + MainActivity.andId);
 
         // Fcm
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(
@@ -82,7 +82,7 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(String token ) {
                         MainActivity.fcmId = token;
-                        Log.d("SplashActivity:onSuccess", "fcmId : " + MainActivity.fcmId );
+                        Log.d("SplashActivity", "onCreate:fcmId : " + MainActivity.fcmId );
 
                         checkServerStatus();
                     }
@@ -115,11 +115,11 @@ public class SplashActivity extends AppCompatActivity {
                 try {
                     String url = Constant.serverUrl + Constant.checkServerUrl;
                     setResult = RomarketUtil.httpConnect(url, null );
-                    Log.d("SplashActivity:checkServerStatus", "setResult : " + setResult);
+                    Log.d("SplashActivity", "checkServerStatus:setResult : " + setResult);
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.d("SplashActivity:checkServerStatus", "exception : " + e.getMessage() );
+                    Log.d("SplashActivity", "checkServerStatus:exception : " + e.getMessage() );
                     // Error Dialog 호출
                     // thread 안에서 다이얼로그 호출
                     /*
@@ -159,7 +159,7 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(String result) {
-                Log.d("SplashActivity:setPhoneInfo", "onPostExecute : " + result );
+                Log.d("SplashActivity", "checkServerStatus:onPostExecute : " + result );
                 SplashActivity.mSplashWaitCircle.setVisibility(View.INVISIBLE );
 
                 if(StringUtils.isEmpty(result) ) {
@@ -177,11 +177,11 @@ public class SplashActivity extends AppCompatActivity {
                     String verNo = jsonObject.getString("verNo" );
                     String updNeedYn = jsonObject.getString("updNeedYn" );
                     String splashImgPath = jsonObject.getString("splashImgPath" );
-                    Log.d("SplashActivity:Handler", "statCd : " + statCd );
-                    Log.d("SplashActivity:Handler", "statMsg : " + statMsg );
-                    Log.d("SplashActivity:Handler", "verNo : " + verNo );
-                    Log.d("SplashActivity:Handler", "updNeedYn : " + updNeedYn );
-                    Log.d("SplashActivity:Handler", "splashImgPath : " + splashImgPath );
+                    Log.d("SplashActivity", "checkServerStatus:statCd : " + statCd );
+                    Log.d("SplashActivity", "checkServerStatus:statMsg : " + statMsg );
+                    Log.d("SplashActivity", "checkServerStatus:verNo : " + verNo );
+                    Log.d("SplashActivity", "checkServerStatus:updNeedYn : " + updNeedYn );
+                    Log.d("SplashActivity", "checkServerStatus:splashImgPath : " + splashImgPath );
                     // imgServerUrl
                     // MainActivity.versionNumber
                     // 필수 업데이트 체크
@@ -216,7 +216,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
     private void downloadSplashImg (String imgUrl) {
-        Log.d("SplashActivity:downloadSplashImg", "downloadSplashImg : ");
+        Log.d("SplashActivity", "downloadSplashImg : ");
 
         new ThreadTask<String, Bitmap>() {
             @Override
@@ -226,7 +226,7 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             protected Bitmap doInBackground(String arg) {
-                Log.d("SplashActivity:downloadSplashImg", "arg : " + arg );
+                Log.d("SplashActivity", "downloadSplashImg:arg : " + arg );
                 Bitmap btmResult = null;
                 URL url = null;
                 InputStream in = null;
@@ -236,10 +236,10 @@ public class SplashActivity extends AppCompatActivity {
                     connection.setUseCaches(true );
                     in = connection.getInputStream();
                     btmResult = BitmapFactory.decodeStream(in);
-                    Log.d("SplashActivity:downloadSplashImg", "btmResult : " + btmResult );
+                    Log.d("SplashActivity", "downloadSplashImg:btmResult : " + btmResult );
 
                 } catch (Exception e) {
-                    Log.d("SplashActivity:downloadSplashImg", "error : " + e.getMessage() );
+                    Log.d("SplashActivity", "downloadSplashImg:error : " + e.getMessage() );
                     e.printStackTrace();
                 } finally {
                     if(in != null ) {
@@ -256,7 +256,7 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(Bitmap result) {
-                Log.d("SplashActivity:downloadSplashImg", "downloadSplashImg : " + result );
+                Log.d("SplashActivity", "downloadSplashImg:result : " + result );
                 SplashActivity.mSplashWaitCircle.setVisibility(View.INVISIBLE );
 
                 if(result != null ) {

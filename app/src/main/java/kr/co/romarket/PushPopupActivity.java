@@ -39,7 +39,7 @@ public class PushPopupActivity extends AppCompatActivity  {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("PushPopupActivity:onCreate", "push Pop" );
+        Log.d("PushPopupActivity", "onCreate:push Pop" );
         /*
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD );
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //투명배경
@@ -114,7 +114,6 @@ public class PushPopupActivity extends AppCompatActivity  {
             rl.getLayoutParams().height = parent_layout_height;
         }
 
-        Log.d("PushPopupActivity:onCreate", "push Pop" );
         String tmpSubjectMsg = "[정보]".concat(this.shopName );
         TextView tvText = (TextView) findViewById(R.id.textView1);
         tvText.setMaxLines(100);
@@ -123,8 +122,6 @@ public class PushPopupActivity extends AppCompatActivity  {
         tvText.setText(newMsg);
         TextView subject_bar=(TextView)findViewById(R.id.text_subject_bar);
         subject_bar.setText(tmpSubjectMsg);
-        Log.d("PushPopupActivity:onCreate", "push Pop" );
-
     }
 
     @Override
