@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/splach_layout"
     tools:context=".SplashActivity" >
 
     <ImageView
@@ -11,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/splach_image"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         app:srcCompat="@drawable/splash"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
@@ -24,12 +25,14 @@
         android:gravity="end|bottom" >
         <TextView
             android:id="@+id/mVersionName"
-            android:layout_width="100dp"
-            android:layout_height="20dp"
-            android:text="VER : "
+            android:layout_width="200dp"
+            android:layout_height="25dp"
+            android:text="VER : 0.0.0.1"
             android:textStyle="bold"
             android:textSize="14sp"
+            android:textAlignment="textEnd"
             android:textColor="@color/white"
+            android:layout_marginRight="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="MissingConstraints" />

@@ -1,16 +1,7 @@
 package kr.co.romarket;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.ProcessLifecycleOwner;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -41,10 +32,17 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 
@@ -52,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+
 import kr.co.romarket.common.RomarketUtil;
 import kr.co.romarket.common.ThreadTask;
 import kr.co.romarket.config.Constant;
@@ -383,6 +382,10 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.mMainWaitCircle.setVisibility(View.VISIBLE );
 
                         MainActivity.mainWebView.loadUrl(urlBuf.toString() );
+
+                        // 초기화
+                        MainActivity.pShopSeq = null;
+                        MainActivity.pPageCode = null;
                     } else {
 
                         CustomDialog customDialog = new CustomDialog(MainActivity.this );
@@ -459,7 +462,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     @SuppressLint("MissingPermission")
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode ) {
             case Constant.REQUEST_CODE_CAMERA : {
                 Log.d("MainActivity", "onRequestPermissionsResult:REQUEST_CODE_CAMERA : " );
@@ -595,7 +598,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 30); // CENTER를 기준으로 0, 0 위치에 메시지 출력
-        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setDuration(Toast.LENGTH_SHORT );
         toast.setView(toastDesign);
         toast.show();
     }

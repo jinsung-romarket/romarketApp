@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -22,7 +21,6 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-import kr.co.romarket.CustomDialog;
 import kr.co.romarket.ImagePopupActivity;
 import kr.co.romarket.MainActivity;
 import kr.co.romarket.PushPopupActivity;
@@ -42,7 +40,7 @@ public class RomarketFcmService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         // Token을 서버로 전송
-        Log.d("RomarketFcmService:onNewToken", "token : " + token );
+        Log.d("RomarketFcmService", "onNewToken:token : " + token );
         sendNewToken(token );
     }
 
@@ -73,12 +71,12 @@ public class RomarketFcmService extends FirebaseMessagingService {
                 }
 
                 try {
-                    Log.d("RomarketFcmService:sendNewToken", "urlBuf : " + urlBuf.toString() );
+                    Log.d("RomarketFcmService", "sendNewToken:urlBuf : " + urlBuf.toString() );
                     setResult = RomarketUtil.httpConnect(urlBuf.toString() , null );
-                    Log.d("RomarketFcmService:sendNewToken", "setResult : " + setResult );
+                    Log.d("RomarketFcmService", "sendNewToken:setResult : " + setResult );
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.d("RomarketFcmService:sendNewToken", "exception : " + e.getMessage() );
+                    Log.d("RomarketFcmService", "sendNewToken:exception : " + e.getMessage() );
                 }
 
                 return setResult;
@@ -86,15 +84,15 @@ public class RomarketFcmService extends FirebaseMessagingService {
 
             @Override
             protected void onPostExecute(String result) {
-                Log.d("RomarketFcmService:sendNewToken", "onPostExecute : " + result );
+                Log.d("RomarketFcmService", "sendNewToken:onPostExecute : " + result );
 
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result );
                     String dvId = jsonObject.getString("dvId" );
                     String shopSeq = jsonObject.getString("shopSeq" );
-                    Log.d("RomarketFcmService:sendNewToken", "dvId : " + dvId );
-                    Log.d("RomarketFcmService:sendNewToken", "shopSeq : " + shopSeq );
+                    Log.d("RomarketFcmService", "sendNewToken:dvId : " + dvId );
+                    Log.d("RomarketFcmService", "sendNewToken:shopSeq : " + shopSeq );
 
                     if(StringUtils.isNotEmpty(dvId) ) {
 
@@ -142,15 +140,15 @@ public class RomarketFcmService extends FirebaseMessagingService {
             e.printStackTrace();
         }
 
-        Log.d("RomarketFcmService:onMessageReceived", "fcmMsg : " + fcmMsg );
-        Log.d("RomarketFcmService:onMessageReceived", "fcmMsgKind : " + fcmMsgKind );
-        Log.d("RomarketFcmService:onMessageReceived", "fcmConnUrl : " + fcmConnUrl );
-        Log.d("RomarketFcmService:onMessageReceived", "fcmShopSeq : " + fcmShopSeq );
-        Log.d("RomarketFcmService:onMessageReceived", "fcmShopName : " + fcmShopName );
+        Log.d("RomarketFcmService", "onMessageReceived:fcmMsg : " + fcmMsg );
+        Log.d("RomarketFcmService", "onMessageReceived:fcmMsgKind : " + fcmMsgKind );
+        Log.d("RomarketFcmService", "onMessageReceived:fcmConnUrl : " + fcmConnUrl );
+        Log.d("RomarketFcmService", "onMessageReceived:fcmShopSeq : " + fcmShopSeq );
+        Log.d("RomarketFcmService", "onMessageReceived:fcmShopName : " + fcmShopName );
 
-        Log.d("RomarketFcmService:onMessageReceived", "MainActivity.fcmId : " + MainActivity.fcmId );
-        Log.d("RomarketFcmService:onMessageReceived", "MainActivity.andId : " + MainActivity.andId );
-        Log.d("RomarketFcmService:onMessageReceived", "MainActivity.versionNumber : " + MainActivity.versionNumber );
+        Log.d("RomarketFcmService", "onMessageReceived:MainActivity.fcmId : " + MainActivity.fcmId );
+        Log.d("RomarketFcmService", "onMessageReceived:MainActivity.andId : " + MainActivity.andId );
+        Log.d("RomarketFcmService", "onMessageReceived:MainActivity.versionNumber : " + MainActivity.versionNumber );
 
         fcmTitle = "";
         if("IMGPOPUP".equals(fcmMsgKind) ) {
@@ -164,10 +162,10 @@ public class RomarketFcmService extends FirebaseMessagingService {
         showTopNoti(fcmTitle, fcmMsg, fcmConnUrl, fcmMsgKind, fcmShopSeq );
 
         // 앱이 실행중 인지에 따라
-        Log.d("RomarketFcmService:onMessageReceived", "MainActivity.isBackGround : " + MainActivity.isBackGround);
+        Log.d("RomarketFcmService", "onMessageReceived:MainActivity.isBackGround : " + MainActivity.isBackGround);
 
         if(MainActivity.isBackGround == false ) {
-            Log.d("RomarketFcmService:onMessageReceived", "PushPopupActivity : " );
+            Log.d("RomarketFcmService", "onMessageReceived:PushPopupActivity : " );
 
             if ("IMGPOPUP".equals(fcmMsgKind )) {
                 Intent imgPop = new Intent(MainActivity.mainActivityContext, ImagePopupActivity.class);

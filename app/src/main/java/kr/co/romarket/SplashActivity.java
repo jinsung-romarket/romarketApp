@@ -1,18 +1,15 @@
 package kr.co.romarket;
 
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,6 +17,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +41,9 @@ public class SplashActivity extends AppCompatActivity {
 
     public static ProgressBar mSplashWaitCircle;
 
+    private final int MY_REQUEST_CODE = 100;
+    private AppUpdateManager mAppUpdateManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
@@ -46,6 +53,7 @@ public class SplashActivity extends AppCompatActivity {
 
         // 시작시 파라메터 확인
         if(getIntent().getScheme() != null && Constant.schemeName.equals(getIntent().getScheme()) ) {
+            Log.d("SplashActivity", "getIntent().getScheme() : ");
             MainActivity.pShopSeq = getIntent().getData().getQueryParameter("shop_seq");
             MainActivity.pPageCode = getIntent().getData().getQueryParameter("page_code");
         }
@@ -72,6 +80,39 @@ public class SplashActivity extends AppCompatActivity {
 
         }
 
+        /*
+        mAppUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
+        // 업데이트 사용 가능 상태인지 체크
+        Task<AppUpdateInfo> appUpdateInfoTask = mAppUpdateManager.getAppUpdateInfo();
+        // 사용가능 체크 리스너를 달아준다
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    // This example applies an immediate update. To apply a flexible update
+                    // instead, pass in AppUpdateType.FLEXIBLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                // Request the update.
+                Log.d("SplashActivity", "addOnSuccessListener : UPDATE " );
+
+                try {
+                    mAppUpdateManager.startUpdateFlowForResult(
+                            appUpdateInfo,
+                            // 유연한 업데이트 사용 시 (AppUpdateType.FLEXIBLE) 사용
+                            AppUpdateType.IMMEDIATE,
+                            // 현재 Activity
+                            SplashActivity.this,
+                            // 전역변수로 선언해준 Code
+                            MY_REQUEST_CODE);
+                } catch (IntentSender.SendIntentException e) {
+                    Log.e("AppUpdater", "AppUpdateManager Error", e);
+                    e.printStackTrace();
+                }
+
+            } else {
+                Log.d("SplashActivity", "addOnSuccessListener : NOUPDATE " );
+            }
+        });
+        */
+
         // Gcm
         MainActivity.andId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.d("SplashActivity", "onCreate:andId : " + MainActivity.andId);
@@ -96,6 +137,37 @@ public class SplashActivity extends AppCompatActivity {
         // int height = size.y;
         // Log.d("SplashActivity:onCreate", "x : " + size.x + ", Y : " + size.y);
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /*
+        if (requestCode == MY_REQUEST_CODE) {
+            if (resultCode != RESULT_OK) {
+                Log.d("AppUpdate", "Update flow failed! Result code: " + resultCode); // 로그로 코드 확인
+                // showCustomSnackbar(findViewById(R.id.splash_main_view), "코로나 맵을 사용하기 위해서는 업데이트가 필요해요");  //snackbar로 사용자에게 알려주기
+                Snackbar.make(findViewById(R.id.splach_layout), "앱을 사용하기 위해서는 업데이트가 필요해요", Snackbar.LENGTH_LONG).show();
+                finishAffinity(); // 앱 종료
+            }
+        }
+        */
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /*
+        mAppUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                try {
+                    mAppUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE, SplashActivity.this, MY_REQUEST_CODE);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        */
     }
 
     // 서버 상태 체크
@@ -185,6 +257,10 @@ public class SplashActivity extends AppCompatActivity {
                     // imgServerUrl
                     // MainActivity.versionNumber
                     // 필수 업데이트 체크
+
+                    // updNeedYn = "Y";
+                    // verNo = "88";
+
                     if("Y".equals(updNeedYn) && MainActivity.versionNumber < Integer.valueOf(verNo) ) {
                         // Update Dialog
                         showUpdateDialog();
@@ -332,6 +408,13 @@ public class SplashActivity extends AppCompatActivity {
             public void onClick(View v) {
                 customDialog.dismissDialog();
                 // 업데이트 처리
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("market://details?id=kr.co.dmart"));
+                intent.setPackage("com.android.vending");
+                startActivity(intent);
+
                 exitApp();
             }
         });

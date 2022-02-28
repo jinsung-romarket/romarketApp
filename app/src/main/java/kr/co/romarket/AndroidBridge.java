@@ -1,7 +1,6 @@
 package kr.co.romarket;
 
 import android.os.Handler;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 final class AndroidBridge {

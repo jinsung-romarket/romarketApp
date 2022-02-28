@@ -4,14 +4,14 @@ public class Constant {
 
     public static String schemeName = "romarket";
 
-    // public static String serverUrl = "https://app.ro-market.com";
-    public static String serverUrl = "http://192.168.45.100";
-    // public static String serverUrl = "http://192.168.45.146";
+    public static String serverUrl = "https://app.ro-market.com";
+    // public static String serverUrl = "http://192.168.45.100";
+    // public static String serverUrl = "http://192.168.45.249";
 
     public static String checkServerUrl = "/init/checkserver";
     public static String setInfoUrl = "/init/android/setinfo";
     public static String serverStatusSuccess = "0000";
-    public static String imgServerUrl = "http://dnmart.co.kr";
+    public static String imgServerUrl = "https://dnmart.co.kr";
 
     public static String mainViewUrl = "/display/main";
     public static String todayViewUrl = "/display/today";

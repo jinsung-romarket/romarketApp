@@ -12,7 +12,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class RomarketUtil {
 
@@ -22,7 +21,7 @@ public class RomarketUtil {
         BufferedReader rd = null;
         String result = null;
 
-        Log.d("RomarketUtil:httpConnect", "urlStr : " + urlStr );
+        Log.d("httpConnect", "urlStr : " + urlStr );
 
         try {
             // Send data
