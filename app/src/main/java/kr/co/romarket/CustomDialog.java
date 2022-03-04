@@ -58,7 +58,7 @@ public class CustomDialog {
 
     public void setNegativeButtonText (String btnName ) {
         if(StringUtils.isEmpty(btnName) ) {
-            btnName = "취소";
+            btnName = "";
         }
         this.negativeButton.setText(btnName );
     }

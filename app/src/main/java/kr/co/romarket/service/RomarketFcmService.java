@@ -5,8 +5,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -57,6 +59,17 @@ public class RomarketFcmService extends FirebaseMessagingService {
                 StringBuffer urlBuf = new StringBuffer();
                 urlBuf.append(Constant.serverUrl );
                 urlBuf.append(Constant.setInfoUrl );
+
+                // Gcm
+                MainActivity.andId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+                try {
+                    PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                    int versionCode = pinfo.versionCode;
+                    MainActivity.versionNumber = versionCode;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 urlBuf.append("?").append("dvKind=").append("android" );
                 urlBuf.append("&").append("groupId=").append("" );

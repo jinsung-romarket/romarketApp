@@ -320,7 +320,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("MainActivity", "setPhoneInfo:dvId : " + dvId );
                     Log.d("MainActivity", "setPhoneInfo:shopSeq : " + shopSeq );
 
-                    if(StringUtils.isNotEmpty(dvId) ) {
+                    // dvId = "null";
+                    if(StringUtils.isNotEmpty(dvId) && !"null".equals(dvId ) ) {
                         StringBuffer urlBuf = new StringBuffer();
                         String pageUrl = Constant.mainViewUrl;
                         if(Constant.PAGE_CODE_TODAY.equals(MainActivity.pPageCode) ) {
@@ -391,15 +392,14 @@ public class MainActivity extends AppCompatActivity {
                         CustomDialog customDialog = new CustomDialog(MainActivity.this );
                         customDialog.setTitle("알림");
                         customDialog.setMessage("서버접속 오류입니다.\n네트웍 상태를 확인하시거나\n네트웍은 문제가 없으실 경우\n서버작업중일수 있으니\n잠시후에 다시 접속해 주십시요.");
-                        customDialog.setNegativeButtonText("");
+                        customDialog.setNegativeButtonText("다시시도");
                         customDialog.setPositiveButtonText("종료");
                         customDialog.showCustomDialog();
                         // negativeButton
                         customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                customDialog.dismissDialog();
-                                exitApp();
+                                setPhoneInfo();
                             }
                         });
                         // positiveButton

@@ -125,7 +125,33 @@ public class SplashActivity extends AppCompatActivity {
                         MainActivity.fcmId = token;
                         Log.d("SplashActivity", "onCreate:fcmId : " + MainActivity.fcmId );
 
-                        checkServerStatus();
+                        if(StringUtils.isNotEmpty(MainActivity.fcmId ) ) {
+                            checkServerStatus();
+                        } else {
+                            CustomDialog customDialog = new CustomDialog(SplashActivity.this );
+                            customDialog.setTitle("알림");
+                            customDialog.setMessage("기기정보 조회 오류입니다.\n앱 종료후 다시 시도해주세요.\n증상이 계속 반복된다면 앱을 삭제하시고\n재설치 후에 다시 접속해 주세요.");
+                            customDialog.setNegativeButtonText("");
+                            customDialog.setPositiveButtonText("종료");
+                            customDialog.showCustomDialog();
+                            // negativeButton
+                            customDialog.negativeButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    customDialog.dismissDialog();
+                                    exitApp();
+                                }
+                            });
+                            // positiveButton
+                            customDialog.positiveButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    customDialog.dismissDialog();
+                                    exitApp();
+                                }
+                            });
+                        }
+
                     }
                 }
         );
